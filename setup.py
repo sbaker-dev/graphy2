@@ -7,23 +7,22 @@ graphy2 is designed to try and insure that a given table or graph standard can b
 from any given statistical or python platform. It is built on top of many external libraries listed below and acts as 
 an API for these libraries. The core libraries graphy2 is currently using are:
  
- Seaborn:       <https://github.com/mwaskom/seaborn>
- Pandas:        <https://github.com/pandas-dev/pandas>
- matplotlib:    <https://github.com/pandas-dev/pandas>
+Seaborn:       <https://github.com/mwaskom/seaborn>  
+Pandas:        <https://github.com/pandas-dev/pandas>  
+matplotlib:    <https://github.com/pandas-dev/pandas>  
  
- graphy2 can be called within python but graphy2 also comes with a wrapper for R, Stata and SPSS so that individuals can 
- still use the program from the software/code type they prefer. It is designed to be as simple as possible, with most
- commands being pushed to a single line. graphy2 also contains a list of styles for well used graphs/tables that should
- reflect the standards expected from certain journals.
+graphy2 can be called within python but graphy2 also comes with a wrapper for R, Stata and SPSS so that individuals can 
+still use the program from the software/code type they prefer. It is designed to be as simple as possible, with most
+commands being pushed to a single line. graphy2 also contains a list of styles for well used graphs/tables that should
+reflect the standards expected from certain journals.
 """
 
- 
 DISTNAME = 'graphy2'
 MAINTAINER = 'Samuel Baker, Nina Di Cara, Oliwia Michalak'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
-DOWNLOAD_URL = "https://github.com/samuelbaker93/graphy"
-VERSION = "0.02.0"
+DOWNLOAD_URL = "https://github.com/sbaker-dev/graphy2"
+VERSION = "0.02.2"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
