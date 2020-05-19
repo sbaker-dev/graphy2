@@ -1,4 +1,5 @@
-from graphy2 import StyleSheet, pd, plt, sns, sys
+from graphy2 import pd, plt, sns, sys
+from graphy2.styles import StyleSheet
 
 
 class Graphy(StyleSheet):
