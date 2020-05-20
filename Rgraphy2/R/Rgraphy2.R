@@ -4,7 +4,7 @@
 # Created on: 19/05/2020
 
 validatePath <- function(python_path){
-  graphy_path <- paste(c(python_path, "/Lib/site-packages/graphy2/__init__.py"), collapse="") # TODO This needs to be to the API
+  graphy_path <- paste(c(python_path, "/Lib/site-packages/graphy2/api.py"), collapse="")
 
   if (file.exists(graphy_path)){
     return(graphy_path)
