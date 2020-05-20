@@ -17,6 +17,19 @@ validatePath <- function(python_path){
 
 }
 
+#' Creation of Scatter plot using Seaborns ScatterPlot Function
+#'
+#' @param python_path The path to your python installation
+#' @param data The path to your data directory
+#' @param write_directory The path you want to write the plot out to
+#' @param figure_name The name of the png file you want to use, defaults to GraphyFigure
+#' @param x_variable The x variable name from your data column header names you want to use as the x variable
+#' @param y_variable The y variable name from your data column header names you want to use as the y variable
+#' @param graident_variable The varaible to use to add a graident of colour to the graph, optional
+#' @param size_variable The varaible to control the size of the points in the scatter, optional
+#' @param custom_ranking A custom list of rankings to order the variables, optional
+#' @return None
+#'
 #' @export
 scatterPlot <- function (python_path, data, write_directory, figure_name, x_variable, y_variable,
                          graident_variable=FALSE, size_variable=FALSE, custom_ranking=FALSE, style_sheet=FALSE) {
