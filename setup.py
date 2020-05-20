@@ -11,7 +11,7 @@ Seaborn:       <https://github.com/mwaskom/seaborn>
 Pandas:        <https://github.com/pandas-dev/pandas>  
 matplotlib:    <https://github.com/pandas-dev/pandas>  
  
-graphy2 can be called within python but graphy2 also comes with a wrapper for R, Stata and SPSS so that individuals can 
+graphy2 can be called within python but graphy2 also comes with a wrapper for Rgraphy2, Stata and SPSS so that individuals can 
 still use the program from the software/code type they prefer. It is designed to be as simple as possible, with most
 commands being pushed to a single line. graphy2 also contains a list of styles for well used graphs/tables that should
 reflect the standards expected from certain journals.
@@ -22,7 +22,7 @@ MAINTAINER = 'Samuel Baker, Nina Di Cara, Oliwia Michalak'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/graphy2"
-VERSION = "0.02.2"
+VERSION = "0.02.3"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
