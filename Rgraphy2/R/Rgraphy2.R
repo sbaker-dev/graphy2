@@ -3,6 +3,8 @@
 # Created by: Samuel Baker
 # Created on: 19/05/2020
 
+devtools::document()
+
 validatePath <- function(python_path){
   graphy_path <- paste(c(python_path, "/Lib/site-packages/graphy2/__init__.py"), collapse="") # TODO This needs to be to the API
 
@@ -17,7 +19,7 @@ validatePath <- function(python_path){
 
 }
 
-
+#' @export
 scatterPlot <- function (python_path, data, write_directory, figure_name, x_variable, y_variable,
                          graident_variable=FALSE, size_variable=FALSE, custom_ranking=FALSE, style_sheet=FALSE) {
 
