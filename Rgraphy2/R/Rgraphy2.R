@@ -3,8 +3,6 @@
 # Created by: Samuel Baker
 # Created on: 19/05/2020
 
-devtools::document()
-
 validatePath <- function(python_path){
   graphy_path <- paste(c(python_path, "/Lib/site-packages/graphy2/__init__.py"), collapse="") # TODO This needs to be to the API
 
