@@ -12,17 +12,17 @@ if __name__ == '__main__':
             args.append(arg)
 
     try:
-        function_name = sys.argv[1]
+        function_name = args[1]
     except IndexError as e:
         raise Exception("No arguments passed to graphy_call.py") from e
 
     try:
-        class_args = [sys.argv[i] for i in range(2, 6)]
+        class_args = [args[i] for i in range(2, 6)]
     except IndexError as e:
         raise Exception("Not enough arguments passed to graphy_call.py for the class args. Args should be:\n"
                         "[0]Script_name\n[1]class_method_name\n[2]path_to_data_file\n[3]write_directory\n"
                         "[4]figure_name\n[5]style_sheet\n[6+]args for class_method_name")
 
-    method_args = [sys.argv[i] for i in range(6, len(sys.argv))]
+    method_args = [args[i] for i in range(6, len(args))]
 
     getattr(Graphy(*class_args), str(function_name))(*method_args)
