@@ -34,38 +34,11 @@ class Graphy(StyleSheet):
         """
 
         self._validate_variable_args(locals(), locals().values(), ['custom_ranking'])
-
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
         sns.despine(figure, left=True, bottom=True)
         plot = sns.scatterplot(x=x_variable, y=y_variable, data=self._data, palette=self.palette, ax=axis,
                                hue=gradient_variable, size=size_variable, hue_order=custom_ranking,
                                linewidth=self.outline_width, sizes=(self.min_point_size, self.max_point_size))
-        plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
-        return plot
-
-    # def bar_plot(self, x_var, y_var, custm_hue, col_names, custom_data, kind = "bar", height_var, aspect_var):
-    #     #bar plot with FacetGrid
-    #     figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
-    #     sns.despine(figure, left=True, bottom=True)
-    #     plot = sns.catplot(x= x_var, y= y_var, hue=custm_hue,
-    #                        col= col_names, data= custom_data,
-    #                        kind=kind, height=height_var, aspect=aspect_var)
-    #     plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
-    #     return plot
-
-    def kde_plot(self, x_var, y_var, cbar_var):
-        figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
-        sns.despine(figure, left=True, bottom=True)
-        plot = sns.kdeplot(x=x_var, y=y_var, cbar=cbar_var)
-        plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
-        return plot
-
-    def violin_plot(self, x_var, y_var, custom_hue, custom_data, custom_palette, if_split, custom_scale, if_inner, if_scale_hue, custom_bw):
-        figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
-        sns.despine(figure, left=True, bottom=True)
-        plot = sns.violinplot(x=x_var, y=y_var, hue=custom_hue, data=custom_data,
-                              palette=custom_palette, split=if_split, scale=custom_scale,
-                              inner=if_inner, scale_hue= if_scale_hue, bw=custom_bw)
         plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
         return plot
 
