@@ -9,5 +9,3 @@ import sys
 # Import graphy2 Objects
 from graphy2.core import *
 from graphy2.styles import *
-
-__version__ = "0.02.4"
