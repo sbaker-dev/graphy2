@@ -10,4 +10,4 @@ import sys
 from graphy2.core import *
 from graphy2.styles import *
 
-__version__ = "0.02.0"
+__version__ = "0.02.4"
