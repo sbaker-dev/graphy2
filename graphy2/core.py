@@ -1,5 +1,7 @@
 from graphy2 import pd, plt, sns, sys
 from graphy2.styles import StyleSheet
+import os
+from pathlib import Path
 
 
 class Graphy(StyleSheet):
@@ -57,7 +59,10 @@ class Graphy(StyleSheet):
             linewidth=self.outline_width,
             sizes=(self.min_point_size, self.max_point_size),
         )
-        plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
+
+        # Write out the plot to chosen write directory as a png
+        self.write_plot(plot)
+
         return plot
 
     def box_plot(
@@ -68,7 +73,7 @@ class Graphy(StyleSheet):
         custom_ranking=None,
         orientation=None,
     ):
-        """Create a box plot in seaborn using the style sheet and chosen variable values. 
+        """Create a box plot in seaborn using the style sheet and chosen variable values.
 
         Arguments:
             x_var -- x-axis variable name
@@ -106,9 +111,8 @@ class Graphy(StyleSheet):
             order=custom_ranking,
             ax=axis,
         )
-
-        # Write out the plot to chosen write directory as a png
-        plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
+        # # Write out the plot
+        self.write_plot(plot)
 
         return plot
 
@@ -157,7 +161,7 @@ class Graphy(StyleSheet):
         )
 
         # Write out the plot to chosen write directory as a png
-        plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
+        self.write_plot(plot)
 
         return plot
 
@@ -171,7 +175,7 @@ class Graphy(StyleSheet):
             y_var -- y-axis variable name
 
         Keyword Arguments:
-            ignore_na {bool} -- If True, ignore observations with missing data when fitting and plotting (default: {True})
+            ignore_na {bool} -- If True, ignore observations with missing data when fitting & plotting (default: {True})
             colour {matplotlib color} -- Colour to use for all elements of the plot (default: {None})
             legend_label {str} -- Label that will be used in any plot legends (default: {None})
 
@@ -200,7 +204,7 @@ class Graphy(StyleSheet):
         )
 
         # Write out the plot to chosen write directory as a png
-        plot.get_figure().savefig(f"{self._write_directory}/{self._figure_name}.png")
+        self.write_plot(plot)
 
         return plot
 
@@ -266,3 +270,52 @@ class Graphy(StyleSheet):
                     " and sav"
                 )
         return data
+
+    @staticmethod
+    def unique_filename(path):
+        """Given original filename, modifies this to be unique
+
+        Returns:
+            filename {str} -- [description]
+        """
+        # Generate the output file name
+        file_name = path + ".png"
+
+        # Check if this file if it already exists
+        if os.path.isfile(file_name):
+            expand = 1
+            # If it does exist then add a number to the end until an available name
+            while True:
+                expand += 1
+                new_file_name = file_name.split(".png")[0] + str(expand) + ".png"
+                if os.path.isfile(new_file_name):
+                    continue
+                else:
+                    # Return the path with correct integer at the end
+                    return path + str(expand)
+        else:
+            # If no changes needed, just return original filename
+            return path
+
+    def write_plot(self, plot):
+        """Writes out plot to .png to requested location, with a unique name.
+            This function will create the directory requested if it does not exist already.
+        Arguments:
+            plot {Seaborn plot object}
+        """
+        # Ensure the figure is being saved to a unique name
+        file_path = os.path.abspath(
+            os.path.join(self._write_directory, self._figure_name)
+        )
+        file_path = self.unique_filename(file_path)
+
+        try:
+            plot.get_figure().savefig(file_path, bbox_inches="tight", dpi=300)
+        except FileNotFoundError:
+            # If the subdirectory does not exist, try to make it
+            Path(self._write_directory).mkdir(parents=True, exist_ok=True)
+            # Try saving the plot out again
+            plot.get_figure().savefig(file_path, bbox_inches="tight", dpi=300)
+        except OSError as ex:
+            # If any other errors are raised, print them to the console
+            print(ex)
