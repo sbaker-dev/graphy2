@@ -16,6 +16,7 @@ class Graphy(StyleSheet):
         self._data = self._set_data_frame(data)
         self._write_directory = write_directory
         self._figure_name = self._set_figure_name(figure_name)
+        self._file_path = self._set_file_path()
 
     def scatter_plot(
         self,
@@ -303,6 +304,12 @@ class Graphy(StyleSheet):
             # If no changes needed, just return original filename
             return filename
 
+    def _set_file_path(self):
+        file_path = os.path.abspath(
+            os.path.join(self._write_directory, self._figure_name)
+        )
+        return file_path
+
     def write_plot(self, plot):
         """Writes out plot to .png to requested location.
             This function will create the directory requested if it does not exist already.
@@ -312,18 +319,14 @@ class Graphy(StyleSheet):
         :return: None
         :rtype: None
         """
-        # Create the filepath to write out to
-        file_path = os.path.abspath(
-            os.path.join(self._write_directory, self._figure_name)
-        )
 
         try:
-            plot.get_figure().savefig(file_path, bbox_inches="tight", dpi=300)
+            plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
         except FileNotFoundError:
             # If the subdirectory does not exist, try to make it
             Path(self._write_directory).mkdir(parents=True, exist_ok=True)
             # Try saving the plot out again
-            plot.get_figure().savefig(file_path, bbox_inches="tight", dpi=300)
+            plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
         except OSError as ex:
             # If any other errors are raised, print them to the console
             print(ex)
