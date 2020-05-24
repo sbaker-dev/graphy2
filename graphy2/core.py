@@ -75,17 +75,18 @@ class Graphy(StyleSheet):
     ):
         """Create a box plot in seaborn using the style sheet and chosen variable values.
 
-        Arguments:
-            x_var -- x-axis variable name
-            y_var -- y-axis variable name
-
-        Keyword Arguments:
-            gradient_variable -- A variable to apply a gradient of colour to the points (default: {None})
-            custom_ranking {list}-- A list of rankings to use instead of the default set (default: {None})
-            orientation {“v” | “h”} -- Whether the plot should be vertical or horizontal (default: {None})
-
-        Returns:
-            plot {matplotlib subplot object} -- The plot is returned, and .png saved to the write directory
+        :param x_var: The variable you want on the x axis
+        :type x_var: str
+        :param y_var: The variable you want on the y axis
+        :type y_var: str
+        :param gradient_variable: A variable to apply a gradient of colour to the points
+        :type gradient_variable: str
+        :param custom_ranking: A list of rankings to use instead of the default set
+        :type custom_ranking: list
+        :param orientation: Whether plot should be vertical ("v") or horizontal ("h")
+        :type orientation: str
+        :return: The seaborn plot is returned, and .png image saved to the write directory
+        :rtype: matplotlib.axes._subplots.AxesSubplot
         """
 
         # Validate the arguments provided
@@ -126,17 +127,18 @@ class Graphy(StyleSheet):
     ):
         """Create a line plot in seaborn using the style sheet and chosen variable values.
 
-        Arguments:
-            x_var -- x-axis variable name
-            y_var -- y-axis variable name
-
-        Keyword Arguments:
-            gradient_variable -- Name of variable to apply a gradient of colour to the points (default: {None})
-            size_variable {str} -- Name of the variable that decides line width (default: {None})
-            custom_ranking {list} -- A list of rankings to use instead of the default set (default: {None})
-
-        Returns:
-            plot {matplotlib subplot object} -- The plot is returned, and .png saved to the write directory
+        :param x_var: The variable you want on the x axis
+        :type x_var: str
+        :param y_var: The variable you want on the y axis
+        :type y_var: str
+        :param gradient_variable: A variable to apply a gradient of colour to the points
+        :type gradient_variable: str
+        :param size_variable: A variable that will be used to decide the line width
+        :type size_variable: str
+        :param custom_ranking: A list of rankings to use instead of the default set
+        :type custom_ranking: list
+        :return: The seaborn plot is returned, and .png image saved to the write directory
+        :rtype: matplotlib.axes._subplots.AxesSubplot
         """
 
         # Validate the arguments provided
@@ -170,17 +172,18 @@ class Graphy(StyleSheet):
     ):
         """Regress y_var on x_var, and then draw a scatterplot of the residuals.
 
-        Arguments:
-            x_var -- x-axis variable name
-            y_var -- y-axis variable name
-
-        Keyword Arguments:
-            ignore_na {bool} -- If True, ignore observations with missing data when fitting & plotting (default: {True})
-            colour {matplotlib color} -- Colour to use for all elements of the plot (default: {None})
-            legend_label {str} -- Label that will be used in any plot legends (default: {None})
-
-        Returns:
-            plot {matplotlib subplot object} -- The plot is returned, and .png saved to the write directory
+        :param x_var: The variable you want on the x axis
+        :type x_var: str
+        :param y_var: The variable you want on the y axis
+        :type y_var: str
+        :param ignore_na: If True, ignore observations with missing data when fitting & plotting
+        :type ignore_na: bool
+        :param colour: Colour to use for all elements of the plot
+        :type colour: matplotlib color
+        :param legend_label: Label that will be used in plot legend
+        :type legend_lable: str
+        :return: The seaborn plot is returned, and .png image saved to the write directory
+        :rtype: matplotlib.axes._subplots.AxesSubplot
         """
         # Validate the arguments provided
         self._validate_variable_args(
@@ -215,8 +218,9 @@ class Graphy(StyleSheet):
         :param new_style: style_sheet dictionary of keys and values to overide in class StyleSheet
         :type new_style: dict
         :return: Nothing, setattr all values for matching keys then end
-        :rtype:None
+        :rtype: None
         """
+
         key_list, value_list = self.style_sheet
         for key, value in zip(key_list, value_list):
             for new_key in new_style:
@@ -304,7 +308,7 @@ class Graphy(StyleSheet):
             This function will create the directory requested if it does not exist already.
 
         :param plot: Plot to write
-        :type: Seaborn plot
+        :type: matplotlib.axes._subplots.AxesSubplot
         :return: None
         :rtype: None
         """
