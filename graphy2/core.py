@@ -15,7 +15,7 @@ class Graphy(StyleSheet):
 
         self._data = self._set_data_frame(data)
         self._write_directory = write_directory
-        self._figure_name = figure_name
+        self._figure_name = self._set_figure_name(figure_name)
 
     def scatter_plot(
         self,
@@ -271,43 +271,47 @@ class Graphy(StyleSheet):
                 )
         return data
 
-    @staticmethod
-    def unique_filename(path):
-        """Given original filename, modifies this to be unique
+    def _set_figure_name(self, figure_name):
+        """Given original filename, appends an integer to make it unique.
 
-        Returns:
-            filename {str} -- [description]
+        :param figure_name: Chosen name of the figure
+        :type: str
+        :return: Unique figure_name
+        :rtype: str
         """
         # Generate the output file name
-        file_name = path + ".png"
+        filename = figure_name
+        filepath = os.path.join(self._write_directory, figure_name + ".png")
 
         # Check if this file if it already exists
-        if os.path.isfile(file_name):
+        if os.path.isfile(filepath):
             expand = 1
             # If it does exist then add a number to the end until an available name
             while True:
                 expand += 1
-                new_file_name = file_name.split(".png")[0] + str(expand) + ".png"
-                if os.path.isfile(new_file_name):
+                new_path = filepath.split(".png")[0] + str(expand) + ".png"
+                if os.path.isfile(new_path):
                     continue
                 else:
                     # Return the path with correct integer at the end
-                    return path + str(expand)
+                    return filename + str(expand)
         else:
             # If no changes needed, just return original filename
-            return path
+            return filename
 
     def write_plot(self, plot):
-        """Writes out plot to .png to requested location, with a unique name.
+        """Writes out plot to .png to requested location.
             This function will create the directory requested if it does not exist already.
-        Arguments:
-            plot {Seaborn plot object}
+
+        :param plot: Plot to write
+        :type: Seaborn plot
+        :return: None
+        :rtype: None
         """
-        # Ensure the figure is being saved to a unique name
+        # Create the filepath to write out to
         file_path = os.path.abspath(
             os.path.join(self._write_directory, self._figure_name)
         )
-        file_path = self.unique_filename(file_path)
 
         try:
             plot.get_figure().savefig(file_path, bbox_inches="tight", dpi=300)
