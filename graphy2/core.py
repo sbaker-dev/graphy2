@@ -168,6 +168,150 @@ class Graphy(StyleSheet):
 
         return plot
 
+    def bar_plot(
+            self,
+            x_var,
+            y_var,
+            gradient_variable,
+            col_var,
+            height_var,
+            aspect_var
+    ):
+        """Create a bar plot in seaborn using the style sheet and chosen variable values.
+
+        :param x_var: The variable you want on the x axis
+        :type x_var: str
+        :param y_var: The variable you want on the y axis
+        :type y_var: str
+        :param gradient_variable: A variable to apply a gradient of colour to the points
+        :type gradient_variable: str
+        :param size_variable: A variable that will be used to decide the line width
+        :type size_variable: str
+        :col_var: Categorical variables that will determine the faceting of the grid.
+        :type col_var: string, optional
+        :height_var: Height (in inches) of each facet. See also:
+        :type height_var: scalar, optional
+        :aspect_var: Aspect ratio of each facet, so that aspect * height gives the width of each facet in inches.
+        :type aspect_var: scalar, optional
+        """
+
+        # Validate the arguments provided
+        self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
+
+        # Set defaults before plotting
+        figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
+        sns.despine(figure, left=True, bottom=True)
+
+        # Generate the plot
+        # NB Some arguments are left at default that are given sensible defaults by seaborn
+        plot = sns.catplot(
+            x=x_var,
+            y=y_var,
+            data=self._data,
+            hue=gradient_variable,
+            col=col_var,
+            kind="bar",
+            height=height_var,
+            aspect=aspect_var
+        )
+
+        # Write out the plot to chosen write directory as a png
+        self.write_plot(plot)
+
+        return plot
+
+    def violin_plot(
+            self,
+            x_var,
+            y_var,
+            gradient_variable,
+            col_var,
+            split_var,
+            height_var,
+            aspect_var
+    ):
+        """Create a bar plot in seaborn using the style sheet and chosen variable values.
+
+        :param x_var: The variable you want on the x axis
+        :type x_var: str
+        :param y_var: The variable you want on the y axis
+        :type y_var: str
+        :param gradient_variable: A variable to apply a gradient of colour to the points
+        :type gradient_variable: str
+        :param size_variable: A variable that will be used to decide the line width
+        :type size_variable: str
+        :col_var: Categorical variables that will determine the faceting of the grid.
+        :type col_var: string, optional
+        :split_var: When using hue nesting with a variable that takes two levels, setting split to True will draw half of a violin for each level. This can make it easier to directly compare the distributions.
+        :type split_var: bool, optional
+        :height_var: Height (in inches) of each facet. See also:
+        :type height_var: scalar, optional
+        :aspect_var: Aspect ratio of each facet, so that aspect * height gives the width of each facet in inches.
+        :type aspect_var: scalar, optional
+        """
+
+        # Validate the arguments provided
+        self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
+
+        # Set defaults before plotting
+        figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
+        sns.despine(figure, left=True, bottom=True)
+
+        # Generate the plot
+        # NB Some arguments are left at default that are given sensible defaults by seaborn
+        plot = sns.catplot(
+            x=x_var,
+            y=y_var,
+            data=self._data,
+            hue=gradient_variable,
+            col=col_var,
+            kind="violin",
+            split= split_var,
+            height=height_var,
+            aspect=aspect_var
+        )
+
+        # Write out the plot to chosen write directory as a png
+        self.write_plot(plot)
+
+        return plot
+
+    def kde_plot(
+            self,
+            x_var,
+            y_var,
+            cbar_var
+    ):
+        """Create a kde plot in seaborn using the style sheet and chosen variable values.
+
+        :param x_var: The variable you want on the x axis
+        :type x_var: str
+        :param y_var: The variable you want on the y axis
+        :type y_var: str
+        :cbar_var: If True and drawing a bivariate KDE plot, add a colorbar.
+        :type cbar_var: bool, optional
+        """
+
+        # Validate the arguments provided
+        self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
+
+        # Set defaults before plotting
+        figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
+        sns.despine(figure, left=True, bottom=True)
+
+        # Generate the plot
+        # NB Some arguments are left at default that are given sensible defaults by seaborn
+        plot = sns.kdeplot(
+            x=x_var,
+            y=y_var,
+            cbar=cbar_var
+        )
+
+        # Write out the plot to chosen write directory as a png
+        self.write_plot(plot)
+
+        return plot
+
     def residual_plot(
         self, x_var, y_var, ignore_na=True, colour=None, legend_label=None
     ):
