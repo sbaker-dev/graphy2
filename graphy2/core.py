@@ -265,7 +265,8 @@ class Graphy(StyleSheet):
             data=self._data,
             hue=gradient_variable,
             col=col_var,
-            kind="bar",
+            kind="violin",
+            split= split_var,
             height=height_var,
             aspect=aspect_var
         )
