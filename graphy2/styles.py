@@ -1,5 +1,4 @@
-from graphy2 import sns
-from graphy2 import plt
+from graphy2 import sns, plt
 SEABORN_STYLE = ["whitegrid", "dark", "white", "ticks", "darkgrid"]
 
 
@@ -19,25 +18,45 @@ class StyleSheet:
         :key number_of_colours: Number of colours to use
         :type number_of_colours: int
         
-        :param colour_palette:
-        :param outline_width:
-        :param point_min_size:
-        :param dpi:
-        :param d_spline_top:
-        :param d_spline_bottom:
-        :param d_spline_left:
-        :param d_spline_right:
-        :param seaborn_style:
+        :key colour_palette: The colour palette to be used, can take a string name of a palette or a seaborn
+        :type colour_palette: str | list
+
+        :key outline_width: How wide of an outline to use
+        :type outline_width: int | float
+
+        :key point_min_size: Minimm size of a point in a graph
+        :type point_min_size: int | float
+
+        :key dpi: Resolution of the plotted figure
+        :type dpi: int
+
+        :key d_spline_top: De-spline Top
+        :type d_spline_top: bool
+
+        :key d_spline_bottom: De-spline Top
+        :type d_spline_bottom: bool
+
+        :key d_spline_left: De-spline Top
+        :type d_spline_left: bool
+
+        :key d_spline_right: De-spline Top
+        :type d_spline_right: bool
+
+        :key seaborn_style: General stylising via seaborn styles
+        :type seaborn_style: str
+
+        :key custom_seaborn: Dict of values to replace in seaborn style
+        :type custom_seaborn: dict
         """
 
-        self.colour_palette = colour_palette
-        self.number_of_colours = number_of_colours
         self.figure_x = figure_x
         self.figure_y = figure_y
+        self.number_of_colours = number_of_colours
+        self.colour_palette = colour_palette
         self.outline_width = outline_width
         self.min_point_size = point_min_size
         self.max_point_size = self.number_of_colours
-        self.dpi = 300
+        self.dpi = dpi
         self.d_spline_top = d_spline_top
         self.d_spline_bottom = d_spline_bottom
         self.d_spline_left = d_spline_left
