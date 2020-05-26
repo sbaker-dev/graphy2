@@ -18,7 +18,7 @@ class StyleSheet:
 
         :key number_of_colours: Number of colours to use
         :type number_of_colours: int
-
+        
         :param colour_palette:
         :param outline_width:
         :param point_min_size:
@@ -29,14 +29,14 @@ class StyleSheet:
         :param d_spline_right:
         :param seaborn_style:
         """
+
+        self.colour_palette = colour_palette
+        self.number_of_colours = number_of_colours
         self.figure_x = figure_x
         self.figure_y = figure_y
-
-        # todo this only works with deaf
-        self.palette = sns.color_palette(n_colors=number_of_colours, palette=colour_palette)
         self.outline_width = outline_width
         self.min_point_size = point_min_size
-        self.max_point_size = number_of_colours
+        self.max_point_size = self.number_of_colours
         self.dpi = 300
         self.d_spline_top = d_spline_top
         self.d_spline_bottom = d_spline_bottom
@@ -69,7 +69,6 @@ class StyleSheet:
     def seaborn_figure(self):
         """
         Creates a default figures
-        :return:
         """
         self.set_seaborn_style()
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
@@ -77,6 +76,8 @@ class StyleSheet:
                     top=self.d_spline_top)
         return axis
 
-
-
-
+    def palette(self):
+        """
+        Returns the palette to be used
+        """
+        return sns.color_palette(self.colour_palette, self.number_of_colours)

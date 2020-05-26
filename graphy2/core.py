@@ -50,16 +50,16 @@ class Graphy(StyleSheet):
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
 
+        # Check variables are valid
         self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
 
-        figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
-        sns.despine(figure, left=True, bottom=True)
+        # Create scatterplot
         plot = sns.scatterplot(
             x=x_variable,
             y=y_variable,
             data=self._data,
-            palette=self.palette,
-            ax=axis,
+            palette=self.palette(),
+            ax=self.seaborn_figure(),
             hue=gradient_variable,
             size=size_variable,
             hue_order=custom_ranking,
@@ -116,7 +116,7 @@ class Graphy(StyleSheet):
             x=x_var,
             y=y_var,
             data=self._data,
-            palette=self.palette,
+            palette=self.palette(),
             linewidth=self.outline_width,
             hue=gradient_variable,
             orient=orientation,
@@ -173,7 +173,7 @@ class Graphy(StyleSheet):
             data=self._data,
             hue=gradient_variable,
             size=size_variable,
-            palette=self.palette,
+            palette=self.palette(),
             hue_order=custom_ranking,
             sizes=(self.min_point_size, self.max_point_size),
             ax=axis,
@@ -294,6 +294,7 @@ class Graphy(StyleSheet):
             split=split_var,
             height=height_var,
             aspect=aspect_var
+
         )
 
         # Write out the plot to chosen write directory as a png
@@ -487,14 +488,18 @@ class Graphy(StyleSheet):
             return filename
 
     def _set_file_path(self):
+        """
+        Set the file path
+        """
         file_path = os.path.abspath(
             os.path.join(self._write_directory, self._figure_name)
         )
         return file_path
 
     def write_plot(self, plot):
-        """Writes out plot to .png to requested location.
-            This function will create the directory requested if it does not exist already.
+        """
+        Writes out plot to .png to requested location.
+        This function will create the directory requested if it does not exist already.
 
         :param plot: Plot to write
         :type: matplotlib.axes._subplots.AxesSubplot
