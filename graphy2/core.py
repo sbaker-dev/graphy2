@@ -32,20 +32,26 @@ class Graphy(StyleSheet):
         ranking
         :param x_variable: The variable you want on the x axis
         :type x_variable: str
+
         :param y_variable: The variable you want on the y axis
         :type y_variable: str
-        :param gradient_variable: A variable to apply a gradient of colour to the points
+
+        :key gradient_variable: A variable to apply a gradient of colour to the points
         :type gradient_variable: str
-        :param size_variable: A variable to vary the size of the points
+
+        :key size_variable: A variable to vary the size of the points
         :type size_variable: str
-        :param custom_ranking: A list of rankings to use instead of the default set
+
+        :key custom_ranking: A list of rankings to use instead of the default set
         :type custom_ranking: list
+
         :return: The seaborn plot is returned if users wish to do something with it, the figure is also saved to the
             write directory
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
 
         self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
+
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
         sns.despine(figure, left=True, bottom=True)
         plot = sns.scatterplot(
@@ -78,14 +84,19 @@ class Graphy(StyleSheet):
 
         :param x_var: The variable you want on the x axis
         :type x_var: str
+
         :param y_var: The variable you want on the y axis
         :type y_var: str
-        :param gradient_variable: A variable to apply a gradient of colour to the points
+
+        :key gradient_variable: A variable to apply a gradient of colour to the points
         :type gradient_variable: str
-        :param custom_ranking: A list of rankings to use instead of the default set
+
+        :key custom_ranking: A list of rankings to use instead of the default set
         :type custom_ranking: list
-        :param orientation: Whether plot should be vertical ("v") or horizontal ("h")
+
+        :key orientation: Whether plot should be vertical ("v") or horizontal ("h")
         :type orientation: str
+
         :return: The seaborn plot is returned, and .png image saved to the write directory
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
@@ -130,14 +141,19 @@ class Graphy(StyleSheet):
 
         :param x_var: The variable you want on the x axis
         :type x_var: str
+
         :param y_var: The variable you want on the y axis
         :type y_var: str
-        :param gradient_variable: A variable to apply a gradient of colour to the points
+
+        :key gradient_variable: A variable to apply a gradient of colour to the points
         :type gradient_variable: str
-        :param size_variable: A variable that will be used to decide the line width
+
+        :key size_variable: A variable that will be used to decide the line width
         :type size_variable: str
-        :param custom_ranking: A list of rankings to use instead of the default set
+
+        :key custom_ranking: A list of rankings to use instead of the default set
         :type custom_ranking: list
+
         :return: The seaborn plot is returned, and .png image saved to the write directory
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
@@ -172,31 +188,35 @@ class Graphy(StyleSheet):
             self,
             x_var,
             y_var,
-            gradient_variable,
-            col_var,
-            height_var,
-            aspect_var
+            gradient_variable=None,
+            col_var=None,
+            height_var=None,
+            aspect_var=None
     ):
-        """Create a bar plot in seaborn using the style sheet and chosen variable values.
+        """
+        Create a bar plot in seaborn using the style sheet and chosen variable values.
 
         :param x_var: The variable you want on the x axis
         :type x_var: str
+
         :param y_var: The variable you want on the y axis
         :type y_var: str
-        :param gradient_variable: A variable to apply a gradient of colour to the points
+
+        :key gradient_variable: A variable to apply a gradient of colour to the points
         :type gradient_variable: str
-        :param size_variable: A variable that will be used to decide the line width
-        :type size_variable: str
-        :col_var: Categorical variables that will determine the faceting of the grid.
-        :type col_var: string, optional
-        :height_var: Height (in inches) of each facet. See also:
-        :type height_var: scalar, optional
-        :aspect_var: Aspect ratio of each facet, so that aspect * height gives the width of each facet in inches.
-        :type aspect_var: scalar, optional
+
+        :key col_var: Categorical variables that will determine the faceting of the grid.
+        :type col_var: str
+
+        :key height_var: Height (in inches) of each facet.
+        :type height_var: scalar
+
+        :key aspect_var: Aspect ratio of each facet, so that aspect * height gives the width of each facet in inches.
+        :type aspect_var: scalar
         """
 
         # Validate the arguments provided
-        self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
+        self._validate_variable_args(locals(), locals().values())
 
         # Set defaults before plotting
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
@@ -224,34 +244,39 @@ class Graphy(StyleSheet):
             self,
             x_var,
             y_var,
-            gradient_variable,
-            col_var,
-            split_var,
-            height_var,
-            aspect_var
+            gradient_variable=None,
+            col_var=None,
+            split_var=None,
+            height_var=None,
+            aspect_var=None
     ):
         """Create a bar plot in seaborn using the style sheet and chosen variable values.
 
         :param x_var: The variable you want on the x axis
         :type x_var: str
+
         :param y_var: The variable you want on the y axis
         :type y_var: str
+
         :param gradient_variable: A variable to apply a gradient of colour to the points
         :type gradient_variable: str
-        :param size_variable: A variable that will be used to decide the line width
-        :type size_variable: str
-        :col_var: Categorical variables that will determine the faceting of the grid.
+
+        :key col_var: Categorical variables that will determine the faceting of the grid.
         :type col_var: string, optional
-        :split_var: When using hue nesting with a variable that takes two levels, setting split to True will draw half of a violin for each level. This can make it easier to directly compare the distributions.
+
+        :key split_var: When using hue nesting with a variable that takes two levels, setting split to True will draw half
+            of a violin for each level. This can make it easier to directly compare the distributions.
         :type split_var: bool, optional
-        :height_var: Height (in inches) of each facet. See also:
+
+        :key height_var: Height (in inches) of each facet. See also:
         :type height_var: scalar, optional
-        :aspect_var: Aspect ratio of each facet, so that aspect * height gives the width of each facet in inches.
+
+        :key aspect_var: Aspect ratio of each facet, so that aspect * height gives the width of each facet in inches.
         :type aspect_var: scalar, optional
         """
 
         # Validate the arguments provided
-        self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
+        self._validate_variable_args(locals(), locals().values())
 
         # Set defaults before plotting
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
@@ -266,7 +291,7 @@ class Graphy(StyleSheet):
             hue=gradient_variable,
             col=col_var,
             kind="violin",
-            split= split_var,
+            split=split_var,
             height=height_var,
             aspect=aspect_var
         )
@@ -280,20 +305,23 @@ class Graphy(StyleSheet):
             self,
             x_var,
             y_var,
-            cbar_var
+            cbar_var=True
     ):
-        """Create a kde plot in seaborn using the style sheet and chosen variable values.
+        """
+        Create a kde plot in seaborn using the style sheet and chosen variable values.
 
         :param x_var: The variable you want on the x axis
         :type x_var: str
+
         :param y_var: The variable you want on the y axis
         :type y_var: str
-        :cbar_var: If True and drawing a bivariate KDE plot, add a colorbar.
+
+        :key cbar_var: If True and drawing a bivariate KDE plot, add a colorbar.
         :type cbar_var: bool, optional
         """
 
         # Validate the arguments provided
-        self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
+        self._validate_variable_args(locals(), locals().values() )
 
         # Set defaults before plotting
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
@@ -319,14 +347,19 @@ class Graphy(StyleSheet):
 
         :param x_var: The variable you want on the x axis
         :type x_var: str
+
         :param y_var: The variable you want on the y axis
         :type y_var: str
+
         :param ignore_na: If True, ignore observations with missing data when fitting & plotting
         :type ignore_na: bool
+
         :param colour: Colour to use for all elements of the plot
         :type colour: matplotlib color
+
         :param legend_label: Label that will be used in plot legend
-        :type legend_lable: str
+        :type legend_label: str
+
         :return: The seaborn plot is returned, and .png image saved to the write directory
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
@@ -372,19 +405,24 @@ class Graphy(StyleSheet):
                 if new_key == key:
                     setattr(self, str(key), new_style[new_key])
 
-    def _validate_variable_args(self, local_args, local_arg_values, exemption_list):
+    def _validate_variable_args(self, local_args, local_arg_values, exemption_list=None):
         """
         A method to validate that all the args that need to be a column header name do exist within the column names
         :param local_args: The args of the current method
         :type local_args: dict
+
         :param local_arg_values: The values of the args of the current method
-        :type local_arg_values: values.view
-        :param exemption_list: Key values to be ignored
+        :type local_arg_values: dict_values
+
+        :key exemption_list: Key values to be ignored
         :type exemption_list: list
+
         :return: Nothing, simply check all args that need checking are within the column names
         :rtype: None
         """
 
+        if exemption_list is None:
+            exemption_list = []
         for key, value in zip(local_args, local_arg_values):
             if value and key != "self" and key not in exemption_list:
                 if value not in self._data.columns.tolist():
@@ -460,10 +498,10 @@ class Graphy(StyleSheet):
 
         :param plot: Plot to write
         :type: matplotlib.axes._subplots.AxesSubplot
+
         :return: None
         :rtype: None
         """
-
         try:
             plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
         except FileNotFoundError:

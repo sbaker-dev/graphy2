@@ -120,3 +120,6 @@ dmypy.json
 
 # VS Code
 .vscode/
+
+# Custom Files
+TestingDir/
