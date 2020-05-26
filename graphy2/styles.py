@@ -11,5 +11,10 @@ class StyleSheet:
         self.min_point_size = point_min_size
         self.max_point_size = number_of_colours
         self.dpi = 300
+        self.d_spline_top = True
+        self.d_spline_bottom = True
+        self.d_spline_left = True
+        self.d_spline_right = True
+
         self.style_sheet = [locals(), locals().values()]
 
