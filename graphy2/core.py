@@ -262,17 +262,17 @@ class Graphy(StyleSheet):
         :type gradient_variable: str
 
         :key col_var: Categorical variables that will determine the faceting of the grid.
-        :type col_var: string, optional
+        :type col_var: string
 
         :key split_var: When using hue nesting with a variable that takes two levels, setting split to True will draw half
             of a violin for each level. This can make it easier to directly compare the distributions.
-        :type split_var: bool, optional
+        :type split_var: bool
 
         :key height_var: Height (in inches) of each facet. See also:
-        :type height_var: scalar, optional
+        :type height_var: scalar
 
         :key aspect_var: Aspect ratio of each facet, so that aspect * height gives the width of each facet in inches.
-        :type aspect_var: scalar, optional
+        :type aspect_var: scalar
         """
 
         # Validate the arguments provided
@@ -503,12 +503,12 @@ class Graphy(StyleSheet):
         :rtype: None
         """
         try:
-            plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
+            plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=self.dpi)
         except FileNotFoundError:
             # If the subdirectory does not exist, try to make it
             Path(self._write_directory).mkdir(parents=True, exist_ok=True)
             # Try saving the plot out again
-            plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
+            plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=self.dpi)
         except OSError as ex:
             # If any other errors are raised, print them to the console
             print(ex)
