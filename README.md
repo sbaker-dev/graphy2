@@ -12,4 +12,4 @@ an API for these libraries. The core libraries graphy2 is currently using are:
  graphy2 can be called within python but graphy2 also comes with a wrapper for R, Stata and SPSS so that individuals can 
  still use the program from the software/code type they prefer. It is designed to be as simple as possible, with most
  commands being pushed to a single line. graphy2 also contains a list of styles for well used graphs/tables that should
- reflect the standards expected from certain journals.
+ reflect the standards expected from certain
