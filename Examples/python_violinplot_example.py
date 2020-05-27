@@ -16,5 +16,4 @@ if __name__ == "__main__":
 
     # Call graphy2 to produce a box plot
     Graphy(data, write_dir).violin_plot(x_var="day", y_var="total_bill",
-                                        gradient_variable="sex", pal_var="Set2", split_var=True,
-                                        scale_var="count", inner_var="stick", scale_gradiet=False)
+                                        gradient_variable="sex")

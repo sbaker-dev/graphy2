@@ -16,5 +16,4 @@ if __name__ == "__main__":
 
     # Call graphy2 to produce a box plot
     Graphy(data, write_dir).bar_plot(x_var="sex", y_var="total_bill",
-                                     gradient_variable="smoker", col_var="time",
-                                     height_var=4, aspect_var=.7)
+                                     gradient_variable="smoker")
