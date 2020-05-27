@@ -6,7 +6,7 @@ from pathlib import Path
 
 class Graphy(StyleSheet):
     def __init__(
-        self, data, write_directory, figure_name="Graphy_Output", style_sheet=None
+        self, data, figure_name="Graphy_Output", style_sheet=None,  write_directory=""
     ):
         super().__init__()
 
@@ -14,7 +14,7 @@ class Graphy(StyleSheet):
             self._set_style_sheet(style_sheet)
 
         self._data = self._set_data_frame(data)
-        self._write_directory = write_directory
+        self._write_directory = self._set_write_directory(write_directory)
         self._figure_name = self._set_figure_name(figure_name)
         self._file_path = self._set_file_path()
 
@@ -458,6 +458,21 @@ class Graphy(StyleSheet):
                     " and sav"
                 )
         return data
+
+    @staticmethod
+    def _set_write_directory(write_directory):
+        """
+        If no directory is set, get the directory of the call file and the write sub-directory 'plots"
+
+        :param write_directory: A path or string location to write the files produced to, defaults to an empty string
+        :type write_directory: str | Path
+
+        :return: A path to uses as the write directory
+        """
+        if write_directory == "":
+            return os.path.join(os.getcwd(), "plots")
+        else:
+            return os.path.realpath(write_directory)
 
     def _set_figure_name(self, figure_name):
         """Given original filename, appends an integer to make it unique.
