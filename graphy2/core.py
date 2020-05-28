@@ -47,14 +47,13 @@ class Graphy(StyleSheet):
         """
 
         self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
-        figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
-        sns.despine(figure, left=True, bottom=True)
+
         plot = sns.scatterplot(
             x=x_variable,
             y=y_variable,
             data=self._data,
-            palette=self.palette,
-            ax=axis,
+            palette=self.palette(),
+            ax=self.seaborn_figure(),
             hue=gradient_variable,
             size=size_variable,
             hue_order=custom_ranking,
@@ -136,7 +135,7 @@ class Graphy(StyleSheet):
             x=x_var,
             y=y_var,
             data=self._data,
-            palette=self.palette,
+            palette=self.palette(),
             linewidth=self.outline_width,
             hue=gradient_variable,
             orient=orientation,
@@ -188,7 +187,7 @@ class Graphy(StyleSheet):
             data=self._data,
             hue=gradient_variable,
             size=size_variable,
-            palette=self.palette,
+            palette=self.palette(),
             hue_order=custom_ranking,
             sizes=(self.min_point_size, self.max_point_size),
             ax=axis,
