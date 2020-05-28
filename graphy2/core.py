@@ -2,11 +2,12 @@ from graphy2 import pd, plt, sns, sys
 from graphy2.styles import StyleSheet
 import os
 from pathlib import Path
+from graphy2.data import Data
 
 
 class Graphy(StyleSheet):
     def __init__(
-        self, data, write_directory, figure_name="Graphy_Output", style_sheet=None
+        self, data, figure_name="Graphy_Output", style_sheet=None,  write_directory=""
     ):
         super().__init__()
 
@@ -14,7 +15,7 @@ class Graphy(StyleSheet):
             self._set_style_sheet(style_sheet)
 
         self._data = self._set_data_frame(data)
-        self._write_directory = write_directory
+        self._write_directory = self._set_write_directory(write_directory)
         self._figure_name = self._set_figure_name(figure_name)
         self._file_path = self._set_file_path()
 
@@ -65,6 +66,36 @@ class Graphy(StyleSheet):
         self.write_plot(plot)
 
         return plot
+
+    def forest_plot(self, weight_area=50):
+
+        # todo currently hard coded for odds
+        df = Data(self._data).odds_ratio()
+
+        # todo This produces a super rough table that needs formatting
+        # StyleSheet().seaborn_figure()
+        # plt.axis("off")
+        # plt.table(cellText=df.values, colLabels=df.columns)
+
+        # start of forest plot
+        fig, axis = StyleSheet().seaborn_figure(return_figure=True)
+        sns.despine(fig, left=True, bottom=False, right=True, top=True)
+        sns.set_style("white")
+        axis.set(yticks=[])
+
+        # todo this needs to loop through the colours in palette in the same loop as index so each line get's its own
+        #  colour
+        plt.axis([min(self._data["lower_bound"]), max(self._data["upper_bound"]), 0, len(self._data.index)])
+        for index, (lower, upper, effect, weight) in enumerate(zip(self._data["lower_bound"], self._data["upper_bound"],
+                                                                   self._data["effect"], self._data["Relative Weight"])):
+            plt.plot([lower, upper], [index+0.5, index+0.5])  # draw line
+            plt.plot([effect], [index+0.5], marker="s", markersize=weight*weight_area)  # draw weighted effect
+
+        # dotted line
+        plt.plot([1, 1], [0, len(self._data.index)], "--", color="Black")
+        plt.show()
+
+        # todo These need to be put together in a Data -> Plot format
 
     def box_plot(
         self,
@@ -380,6 +411,22 @@ class Graphy(StyleSheet):
                     " and sav"
                 )
         return data
+
+    @staticmethod
+    def _set_write_directory(write_directory):
+        """
+        If no directory is set, get the directory of the call file and the write sub-directory 'plots"
+
+        :param write_directory: A path or string location to write the files produced to, defaults to an empty string
+        :type write_directory: str | Path
+
+        :return: A path to uses as the write directory
+        """
+        if write_directory == "":
+            return os.path.join(os.getcwd(), "plots")
+        else:
+            return os.path.realpath(write_directory)
+
 
     def _set_figure_name(self, figure_name):
         """Given original filename, appends an integer to make it unique.
