@@ -9,3 +9,4 @@ import sys
 # Import graphy2 Objects
 from graphy2.core import *
 from graphy2.styles import *
+from graphy2.data import *
