@@ -3,6 +3,13 @@ from graphy2 import sns
 
 
 def blank_style_sheet():
+    """
+    Return a dict of the key values from Style Sheet without any values
+
+    :return: Dictionary of keys without values
+    :rtype: dict
+    """
+
     blank = {}
     for key in StyleSheet().style_sheet[0]:
         if key != "self":
@@ -11,6 +18,13 @@ def blank_style_sheet():
 
 
 def default_style_sheet():
+    """
+    Return the default style sheet
+
+    :return: Dictionary of the default style sheet
+    :rtype: dict
+    """
+
     default = {}
     for key, value in zip(StyleSheet().style_sheet[0], StyleSheet().style_sheet[1]):
         if key != "self":

@@ -5,7 +5,7 @@ SEABORN_STYLE = ["whitegrid", "dark", "white", "ticks", "darkgrid"]
 class StyleSheet:
     def __init__(self, figure_x=5, figure_y=5, number_of_colours=8, colour_palette="Blues_d",
                  outline_width=0, point_min_size=1, dpi=300, d_spline_top=True, d_spline_bottom=True,
-                 d_spline_left=True, d_spline_right=True, seaborn_style="darkgrid", custom_seaborn=None):
+                 d_spline_left=True, d_spline_right=True, seaborn_style="white", custom_seaborn=None):
         """
         This is the master controller for the styling of graphs and Tables within graphy2.
 
@@ -85,7 +85,7 @@ class StyleSheet:
         # todo Currently this only uses seaborn styling via sns.set_style but matplotlib functionality can be exposed
         #  via sns.set
 
-    def seaborn_figure(self):
+    def seaborn_figure(self, return_figure=False):
         """
         Creates a default figures
         """
@@ -93,7 +93,10 @@ class StyleSheet:
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
         sns.despine(figure, left=self.d_spline_left, bottom=self.d_spline_bottom, right=self.d_spline_right,
                     top=self.d_spline_top)
-        return axis
+        if return_figure:
+            return figure, axis
+        else:
+            return axis
 
     def palette(self):
         """
