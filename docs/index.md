@@ -4,3 +4,7 @@
 
 Welcome to the documentation for `graphy2`. We will be updating this site with information 
 on how to use graphy2 in the near future. 
+
+
+
+Include the seaborn link to [styling](https://seaborn.pydata.org/tutorial/aesthetics.html) 
