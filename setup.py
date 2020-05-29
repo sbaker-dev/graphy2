@@ -33,7 +33,9 @@ INSTALL_REQUIRES = [
     "kiwisolver>=1.2.0",
     "pyparsing>=2.4.7",
     "python-dateutil>=2.8.1",
-    "pytz>=2020.1", 'numpy'
+    "pytz>=2020.1",
+    'numpy>=1.18.4',
+    'opencv-python>=4.2.0.34'
 ]
 
 

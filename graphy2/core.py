@@ -1,9 +1,14 @@
-from graphy2 import pd, plt, sns, sys
+from graphy2 import pd, sns, sys
 from graphy2.styles import StyleSheet
-import os
 from pathlib import Path
 from graphy2.data import Data
+import os
+import cv2
+from matplotlib.image import imread as mat_imread
+import numpy as np
 
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class Graphy(StyleSheet):
     def __init__(
@@ -70,17 +75,21 @@ class Graphy(StyleSheet):
 
         # todo currently hard coded for odds
         df = Data(self._data).odds_ratio()
-
-        # todo This produces a super rough table that needs formatting
-        # StyleSheet().seaborn_figure()
-        # plt.axis("off")
-        # plt.table(cellText=df.values, colLabels=df.columns)
+        #
+        # # todo This produces a super rough table that needs formatting
+        fig, axis = StyleSheet().seaborn_figure(return_figure=True)
+        plt.axis("off")
+        plt.table(cellText=df.values, colLabels=df.columns)
+        print(df)
 
         # start of forest plot
-        fig, axis = StyleSheet().seaborn_figure(return_figure=True)
+        # fig, axis = StyleSheet().seaborn_figure(return_figure=True)
         sns.despine(fig, left=True, bottom=False, right=True, top=True)
         sns.set_style("white")
         axis.set(yticks=[])
+
+        # todo This needs to be Reverse (currently the first study is plotted at the bottom but needs to be plotted at
+        #  top
 
         # todo this needs to loop through the colours in palette in the same loop as index so each line get's its own
         #  colour
@@ -95,6 +104,65 @@ class Graphy(StyleSheet):
         plt.show()
 
         # todo These need to be put together in a Data -> Plot format
+
+    def image_stack_figure(self, dimensions=None, z_list=None, elevation=30, rotation=45, down_sampling=6,
+                           vertical_stack=True):
+        """
+        This stacks images in a 3D space vertically or horizontally
+
+        :key dimensions: The square dimension you want the image to be, if not set, the largest of X Y dimensions will
+            be selected by default
+        :type dimensions: int | None
+
+        :key z_list: A list of z dimensional coordinates for your graph, if left at default image plotted as flat
+        :type z_list: list | None
+
+        :key elevation: The elevation from the floor you want the camera to be
+        :type elevation: int
+
+        :key rotation: The rotation around the plots orgin you want the camera to be
+        :type rotation: int
+
+        :key down_sampling: This value will be used to divide dimensions to draw the plot.
+        :type down_sampling: int
+
+        :key vertical_stack: Stack images vertically, if False stack horizontally
+        :type vertical_stack: bool
+
+        :return: The current plot
+        """
+
+        # # Load the images
+        raw_images = [mat_imread(img) for img in self._data]
+
+        # If dimensions have not been set, set dimension to be the largest of X and Y
+        if not dimensions:
+            dimensions = max(max([img.shape[0] for img in raw_images]), max([img.shape[1] for img in raw_images]))
+
+        # If not a custom z, set z to be a flat list based on index
+        if not z_list:
+            z_list = [np.full((dimensions, dimensions), index) for index, img in enumerate(raw_images)]
+
+        # Read in the images and Scale images them to a square
+        images = [cv2.resize(img, (dimensions, dimensions)) for img in raw_images]
+
+        # Plot the images, depending on the sub image resolution scaling from r/cstride this can take a while so print
+        # progress
+        x, y = np.mgrid[0:dimensions, 0:dimensions]
+        ax = plt.gca(projection='3d')
+        for index, (img, z) in enumerate(zip(images, z_list)):
+            # y and z are inverted if horizontal stacking
+            if vertical_stack:
+                ax.plot_surface(x, y, z, rstride=down_sampling, cstride=down_sampling, facecolors=img, shade=False)
+            else:
+                ax.plot_surface(x, z, y, rstride=down_sampling, cstride=down_sampling, facecolors=img, shade=False)
+            print(f"plotted {index}")
+
+        # Set camera in 3D space
+        ax.view_init(elev=elevation, azim=rotation)
+        plt.axis("off")
+        self.write_plot(ax)
+        return ax
 
     def box_plot(
         self,
@@ -390,25 +458,34 @@ class Graphy(StyleSheet):
         If the loaded data is not an instance of pandas dataframe, create one from the file type using pandas
         :param data: data to be verified and if need be loaded
         :type: Any
+
         :return: An instance of pandas data frame
         :rtype: pandas.core.frame.DataFrame
         """
 
         if not isinstance(data, pd.DataFrame):
-            file_type = data.split(".")[-1]
-            if file_type == "csv":
-                data = pd.read_csv(data)
-            elif file_type == "xlsx":
-                data = pd.read_excel(data)
-            elif file_type == "dta":
-                data = pd.read_stata(data)
-            elif file_type == "sav":
-                data = pd.read_spss(data)
+
+            file_type = data.split(".")
+            if len(file_type) == 1:
+                files = [f.split(".")[-1] for f in os.listdir(data)]
+                if "png" in files:
+                    return [os.path.realpath(f"{data}/{file}") for file in os.listdir(data)]
+                else:
+                    raise TypeError("Only .png files are currently expected for directory iteration")
+
             else:
-                sys.exit(
-                    "Error: File type not supported\nCurrent supported files are pandas.Dataframe, csv, xlsx, dta"
-                    " and sav"
-                )
+                file_type = file_type[-1]
+                if file_type == "csv":
+                    data = pd.read_csv(data)
+                elif file_type == "xlsx":
+                    data = pd.read_excel(data)
+                elif file_type == "dta":
+                    data = pd.read_stata(data)
+                elif file_type == "sav":
+                    data = pd.read_spss(data)
+                else:
+                    sys.exit("Error: File type not supported\nCurrent supported files are pandas.Dataframe, csv, xlsx,"
+                             " dta and sav")
         return data
 
     @staticmethod
