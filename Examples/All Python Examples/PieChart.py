@@ -6,4 +6,4 @@ if __name__ == '__main__':
     read_data = r"C:\Users\Samuel\PycharmProjects\graphy2\ExampleData\Pie.csv"
 
     # Create the pie chart
-    Graphy(read_data, "Pie Plot").pie_chart()
+    Graphy(read_data, "Pie Plot").pie_chart(display_values='%1.1f%%')

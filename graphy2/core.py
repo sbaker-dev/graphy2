@@ -166,7 +166,7 @@ class Graphy(StyleSheet):
         self.write_plot(ax)
         return ax
 
-    def pie_chart(self, start_angle=90):
+    def pie_chart(self, start_angle=90, display_values=None):
         # Easier to use a csv object rather than pandas for this so recast the data to CsvObject
         labels, amount, explode = CsvObject(self._read_directory, column_types=[str, int, float]).column_data
 
@@ -177,7 +177,8 @@ class Graphy(StyleSheet):
             explode=explode,
             labels=labels,
             startangle=start_angle,
-            colors=self.palette()
+            colors=self.palette(),
+            autopct=display_values
         )
         ax.axis("equal")
         self.write_plot(ax)
