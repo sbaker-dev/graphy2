@@ -35,7 +35,8 @@ INSTALL_REQUIRES = [
     "python-dateutil>=2.8.1",
     "pytz>=2020.1",
     'numpy>=1.18.4',
-    'opencv-python>=4.2.0.34'
+    'opencv-python>=4.2.0.34',
+    'csvObject'
 ]
 
 

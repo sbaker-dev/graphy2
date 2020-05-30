@@ -6,9 +6,10 @@ import os
 import cv2
 from matplotlib.image import imread as mat_imread
 import numpy as np
-
+from csvObject import CsvObject
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D  # required even if not used for 3D functionality in matplotlib
+
 
 class Graphy(StyleSheet):
     def __init__(
@@ -19,6 +20,7 @@ class Graphy(StyleSheet):
         if style_sheet:
             self._set_style_sheet(style_sheet)
 
+        self._read_directory = data
         self._data = self._set_data_frame(data)
         self._write_directory = self._set_write_directory(write_directory)
         self._figure_name = self._set_figure_name(figure_name)
@@ -161,6 +163,23 @@ class Graphy(StyleSheet):
         # Set camera in 3D space
         ax.view_init(elev=elevation, azim=rotation)
         plt.axis("off")
+        self.write_plot(ax)
+        return ax
+
+    def pie_chart(self, start_angle=90):
+        # Easier to use a csv object rather than pandas for this so recast the data to CsvObject
+        labels, amount, explode = CsvObject(self._read_directory, column_types=[str, int, float]).column_data
+
+        # Construct the pie chart from the raw data
+        ax = self.seaborn_figure()
+        ax.pie(
+            amount,
+            explode=explode,
+            labels=labels,
+            startangle=start_angle,
+            colors=self.palette()
+        )
+        ax.axis("equal")
         self.write_plot(ax)
         return ax
 
