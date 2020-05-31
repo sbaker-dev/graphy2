@@ -95,7 +95,7 @@ class Graphy(StyleSheet):
         no_of_rows = data.shape[0] + 1
         no_of_cols = data.shape[1]
 
-        # Write the forest plot
+        # Write the forest subplot
         self._forest_plot_plot(no_of_cols, no_of_rows, plot_data, data, weight_area)
 
         # Construct the table subplot
