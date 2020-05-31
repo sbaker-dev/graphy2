@@ -78,38 +78,32 @@ class Graphy(StyleSheet):
 
     def forest_plot(self, weight_area=50):
 
-        # Set up defaults and data first
-        df = Data(self._data).odds_ratio()
+        # Construct the table's data
+        data, plot_data = Data(self._data).construct_odds_table()
 
-        # should have been handeled in odds
-        # Round the relative weight to 3 significant figures
-        # df["Relative Weight"] = df["Relative Weight"].astype("float64").round(3)
-
-        # Change variables to strings for easy concatenation
-        df = df.astype(str)
-        # Create summary columns of events/total
-        df["treat_nums"] = df["deaths_plasma"].str.cat(df["total_cases"], sep="/")
-        df["control_nums"] = df["deaths_control"].str.cat(df["total_control"], sep="/")
-        df_reduced = df[
-            [
-                "trail",
-                "treat_nums",
-                "control_nums",
-                "Odds Ratio(95% CI)",
-                "Relative Weight",
-            ]
-        ]
         # Get height to set each row based on number of data entries
-        no_of_rows = df_reduced.shape[0] + 1
-        no_of_cols = df_reduced.shape[1]
+        no_of_rows = data.shape[0] + 1
+        no_of_cols = data.shape[1]
 
+        # Write the forest plot
+        self._forest_plot_plot(no_of_cols, no_of_rows, plot_data, data, weight_area)
+
+        # Construct the table subplot
+        self._forest_plot_table(no_of_rows, data)
+
+        # Todo this should be probably have a specific handle rather than being part of attribute error
+        self.write_plot(plt)
+
+    def _forest_plot_plot(self, no_of_cols, no_of_rows, plot_data, data, weight_area):
         # Instatiate the figure (we will recreate the axes, so don't need them)
         fig, _ = StyleSheet().seaborn_figure(return_figure=True)
 
         # TODO: +5 and -5 work with this number of rows/cols but this should be tested
         # with other data sets to see if it needs to be proportionate to number of rows/cols
         # Set the figure size so it's proportionate to the amount of data in the figure
-        fig.set_size_inches(no_of_cols + 5, no_of_rows - 5)
+        # todo Agreed, this needs to be generalised but cannot think of how to do that right now.
+        fig.set_size_inches(no_of_cols * 2, no_of_cols)
+
         # Make sure the two subplots use available space using tight_layout()
         plt.tight_layout()
         # Remove distance between the table and the graph
@@ -117,18 +111,12 @@ class Graphy(StyleSheet):
 
         # Create the subplots to our data requirements (makes sure that the rows of the
         # table will line up with the graph we draw).
-        ax1 = plt.subplot2grid((no_of_rows, 2), (0, 0), rowspan=no_of_rows, colspan=1)
         ax2 = plt.subplot2grid(
             (no_of_rows, 2), (1, 1), rowspan=no_of_rows - 1, colspan=1
         )
 
         # Plotting the forest plot
-        # TODO: this needs to loop through the colours in palette in the same loop as index so each line get's its own
-        #  colour
-        ax2.set(
-            xlim=(min(self._data["lower_bound"]), max(self._data["upper_bound"])),
-            ylim=(0, len(self._data.index)),
-        )
+        ax2.set(xlim=(min(plot_data.iloc[:, 0]), max(plot_data.iloc[:, 1])), ylim=(0, len(data.index)))
         # Make sure the plots are ordered correctly against the table
         plt.gca().invert_yaxis()
 
@@ -139,69 +127,91 @@ class Graphy(StyleSheet):
             labelleft=False,  # ticks along the bottom edge are off
             top=False,
         )  # ticks along the top edge are off
-        sns.despine(left=True, bottom=False, right=True)
-        ax2.xaxis.set_minor_locator(
-            AutoMinorLocator()
-        )  # This doesn't seem to do anything right now?
+        sns.despine(left=True)
+
+        # Ensure that there are as many colours as there are values
+        self.number_of_colours = len(data.values)
 
         # Drawing the actual lines and squares on the plot
-        for index, (lower, upper, effect, weight) in enumerate(
-            zip(
-                self._data["lower_bound"],
-                self._data["upper_bound"],
-                self._data["effect"],
-                self._data["Relative Weight"],
-            )
-        ):
-            ax2.plot([lower, upper], [index + 0.5, index + 0.5])  # draw line
-            ax2.plot(
-                [effect], [index + 0.5], marker="s", markersize=weight * weight_area
-            )  # draw weighted effect
+        for index, ((lower, upper, effect, weight), colour) in enumerate(zip(plot_data.values, self.palette())):
+            ax2.plot([lower, upper], [index + 0.5, index + 0.5], color=colour)
+            ax2.plot([effect], [index + 0.5], marker="s", markersize=weight * weight_area, color=colour)
+
         # Draw the dotted line
         ax2.plot([1, 1], [0, len(self._data.index)], "--", color="Black")
 
-        # Table Plot
-        ax1.axis("off")  # Turn off the axis labels
+    def _forest_plot_table(self, no_of_rows, data):
+        """
+        Construct the table subplot for forest plot
+
+        :param no_of_rows: The number of rows in the table
+        :param data: the values to put in the table
+        :return: Nothing, set the table subplot then finish
+        """
+
+        # Create table axis for forest plot
+        ax1 = plt.subplot2grid((no_of_rows, 2), (0, 0), rowspan=no_of_rows, colspan=1)
+        ax1.axis("off")
+
         # Set up the table
         tbl = ax1.table(
-            cellText=df_reduced.values,
-            colLabels=[
-                "$\\bf{Study}$",
-                "$\\bf{Case\\ (n/N)}$",
-                "$\\bf{Control\\ (n/N)}$",
-                "$\\bf{OR\\ (95\\%\\ CI)}$",
-                "$\\bf{Weight}$",
-            ],
+            cellText=data.values,
+            colLabels=[f"$\\bf{header}$" for header in data.columns],
             edges="open",
             loc="center",
             cellLoc="center",
         )
 
+        # Underlines column headers
+        self._table_under_line_row(tbl, "B", 0)
+
         # These lines set the row height so that they fit the plot.
         # This ensures each row is sized to line up with the plot on the right.
-        table_props = tbl.properties()
-        table_cells = table_props["child_artists"]
-        for cell in table_cells:
+        for cell in tbl.properties()["children"]:
             cell.set_height(1 / no_of_rows)
 
-        # This function borrowed from stack overflow
-        # https://stackoverflow.com/questions/48210749/matplotlib-table-assign-different-text-alignments-to-different-columns
-        def set_align_for_column(table, col, align="left"):
-            cells = [key for key in table._cells if key[1] == col]
-            for cell in cells:
-                table._cells[cell]._loc = align
-
         # Now, align the columns as desired.
-        set_align_for_column(tbl, col=0, align="left")
+        self._table_align_columns(tbl, col=0, align="left")
 
         # Autoset column width (Beware if the no of cols changes, this may mean the plot
-        # exceeds it's subplot space...)
-        tbl.auto_set_column_width([1, 2, 3, 4])
+        # exceeds it's subplot space...) # todo why?
+        tbl.auto_set_column_width([i for i in range(len(data.columns))])
+
+        # todo font size should be an exposed stylesheet parameter
         # Both lines required for font size to be changed (who knows why...)
         tbl.auto_set_font_size(False)
         tbl.set_fontsize(10)
 
-        self.write_plot(plt)
+    @staticmethod
+    def _table_under_line_row(table, underline_side, row_index):
+        """
+        Underlines row
+
+        :param table: table in question
+        :param underline_side: Takes B, R, T, or L for bottom right top or left or open, closed horizontal vertical
+        :param row_index: Row to under line
+        :return: None
+        """
+        cells = [key for key in table._cells if key[0] == row_index]
+        for cell in cells:
+            table._cells[cell].visible_edges = underline_side
+
+    @staticmethod
+    def _table_align_columns(table, col, align="left"):
+        """
+        Aligns table
+
+        Source: https://stackoverflow.com/questions/48210749/matplotlib-table-assign-different-text-alignments-to-
+                different-columns
+
+        :param table: table in question
+        :param col: column index
+        :param align: align type
+        :return: None
+        """
+        cells = [key for key in table._cells if key[1] == col]
+        for cell in cells:
+            table._cells[cell]._loc = align
 
     def image_stack_figure(
         self,
