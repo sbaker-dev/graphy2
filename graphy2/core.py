@@ -8,7 +8,6 @@ from matplotlib.image import imread as mat_imread
 import numpy as np
 from csvObject import CsvObject
 import matplotlib.pyplot as plt
-from matplotlib.ticker import AutoMinorLocator
 
 # required even if not used for 3D functionality in matplotlib
 from mpl_toolkits.mplot3d import Axes3D
