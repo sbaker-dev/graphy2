@@ -77,6 +77,17 @@ class Graphy(StyleSheet):
         return plot
 
     def forest_plot(self, weight_area=50):
+        """
+        Constructs a forest plot
+
+        Notes
+        ------
+        Currently the formating is very data dependent and it needs to handle the output explicitly.
+        Also needs to all you to actually submit what types of formation you want to do like ODDS or RR
+
+        :param weight_area:
+        :return:
+        """
 
         # Construct the table's data
         data, plot_data = Data(self._data).construct_odds_table()
