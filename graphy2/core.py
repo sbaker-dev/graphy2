@@ -8,12 +8,15 @@ from matplotlib.image import imread as mat_imread
 import numpy as np
 from csvObject import CsvObject
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D  # required even if not used for 3D functionality in matplotlib
+from matplotlib.ticker import AutoMinorLocator
+
+# required even if not used for 3D functionality in matplotlib
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class Graphy(StyleSheet):
     def __init__(
-        self, data, figure_name="Graphy_Output", style_sheet=None,  write_directory=""
+        self, data, figure_name="Graphy_Output", style_sheet=None, write_directory=""
     ):
         super().__init__()
 
@@ -75,40 +78,137 @@ class Graphy(StyleSheet):
 
     def forest_plot(self, weight_area=50):
 
-        # todo currently hard coded for odds
+        # Set up defaults and data first
         df = Data(self._data).odds_ratio()
-        #
-        # # todo This produces a super rough table that needs formatting
-        fig, axis = StyleSheet().seaborn_figure(return_figure=True)
-        plt.axis("off")
-        plt.table(cellText=df.values, colLabels=df.columns)
-        print(df)
+        # Round the relative weight to 3 significant figures
+        df["Relative Weight"] = df["Relative Weight"].astype("float64").round(3)
+        # Change variables to strings for easy concatenation
+        df = df.astype(str)
+        # Create summary columns of events/total
+        df["treat_nums"] = df["deaths_plasma"].str.cat(df["total_cases"], sep="/")
+        df["control_nums"] = df["deaths_control"].str.cat(df["total_control"], sep="/")
+        df_reduced = df[
+            [
+                "trail",
+                "treat_nums",
+                "control_nums",
+                "Odds Ratio(95% CI)",
+                "Relative Weight",
+            ]
+        ]
+        # Get height to set each row based on number of data entries
+        no_of_rows = df_reduced.shape[0] + 1
+        no_of_cols = df_reduced.shape[1]
 
-        # start of forest plot
-        # fig, axis = StyleSheet().seaborn_figure(return_figure=True)
-        sns.despine(fig, left=True, bottom=False, right=True, top=True)
-        sns.set_style("white")
-        axis.set(yticks=[])
+        # Instatiate the figure (we will recreate the axes, so don't need them)
+        fig, _ = StyleSheet().seaborn_figure(return_figure=True)
 
-        # todo This needs to be Reverse (currently the first study is plotted at the bottom but needs to be plotted at
-        #  top
+        # TODO: +5 and -5 work with this number of rows/cols but this should be tested
+        # with other data sets to see if it needs to be proportionate to number of rows/cols
+        # Set the figure size so it's proportionate to the amount of data in the figure
+        fig.set_size_inches(no_of_cols + 5, no_of_rows - 5)
+        # Make sure the two subplots use available space using tight_layout()
+        plt.tight_layout()
+        # Remove distance between the table and the graph
+        plt.subplots_adjust(wspace=0.1, hspace=0)
 
-        # todo this needs to loop through the colours in palette in the same loop as index so each line get's its own
+        # Create the subplots to our data requirements (makes sure that the rows of the
+        # table will line up with the graph we draw).
+        ax1 = plt.subplot2grid((no_of_rows, 2), (0, 0), rowspan=no_of_rows, colspan=1)
+        ax2 = plt.subplot2grid(
+            (no_of_rows, 2), (1, 1), rowspan=no_of_rows - 1, colspan=1
+        )
+
+        # Plotting the forest plot
+        # TODO: this needs to loop through the colours in palette in the same loop as index so each line get's its own
         #  colour
-        plt.axis([min(self._data["lower_bound"]), max(self._data["upper_bound"]), 0, len(self._data.index)])
-        for index, (lower, upper, effect, weight) in enumerate(zip(self._data["lower_bound"], self._data["upper_bound"],
-                                                                   self._data["effect"], self._data["Relative Weight"])):
-            plt.plot([lower, upper], [index+0.5, index+0.5])  # draw line
-            plt.plot([effect], [index+0.5], marker="s", markersize=weight*weight_area)  # draw weighted effect
+        ax2.set(
+            xlim=(min(self._data["lower_bound"]), max(self._data["upper_bound"])),
+            ylim=(0, len(self._data.index)),
+        )
+        # Make sure the plots are ordered correctly against the table
+        plt.gca().invert_yaxis()
 
-        # dotted line
-        plt.plot([1, 1], [0, len(self._data.index)], "--", color="Black")
-        plt.show()
+        # Altering the appearance of the axis ticks and labels
+        ax2.tick_params(
+            axis="y",  # changes apply to the x-axis
+            which="both",  # both major and minor ticks are affected
+            labelleft=False,  # ticks along the bottom edge are off
+            top=False,
+        )  # ticks along the top edge are off
+        sns.despine(left=True, bottom=False, right=True)
+        ax2.xaxis.set_minor_locator(
+            AutoMinorLocator()
+        )  # This doesn't seem to do anything right now?
 
-        # todo These need to be put together in a Data -> Plot format
+        # Drawing the actual lines and squares on the plot
+        for index, (lower, upper, effect, weight) in enumerate(
+            zip(
+                self._data["lower_bound"],
+                self._data["upper_bound"],
+                self._data["effect"],
+                self._data["Relative Weight"],
+            )
+        ):
+            ax2.plot([lower, upper], [index + 0.5, index + 0.5])  # draw line
+            ax2.plot(
+                [effect], [index + 0.5], marker="s", markersize=weight * weight_area
+            )  # draw weighted effect
+        # Draw the dotted line
+        ax2.plot([1, 1], [0, len(self._data.index)], "--", color="Black")
 
-    def image_stack_figure(self, dimensions=None, z_list=None, elevation=30, rotation=45, down_sampling=6,
-                           vertical_stack=True):
+        # Table Plot
+        ax1.axis("off")  # Turn off the axis labels
+        # Set up the table
+        tbl = ax1.table(
+            cellText=df_reduced.values,
+            colLabels=[
+                "$\\bf{Study}$",
+                "$\\bf{Case\\ (n/N)}$",
+                "$\\bf{Control\\ (n/N)}$",
+                "$\\bf{OR\\ (95\\%\\ CI)}$",
+                "$\\bf{Weight}$",
+            ],
+            edges="open",
+            loc="center",
+            cellLoc="center",
+        )
+
+        # These lines set the row height so that they fit the plot.
+        # This ensures each row is sized to line up with the plot on the right.
+        table_props = tbl.properties()
+        table_cells = table_props["child_artists"]
+        for cell in table_cells:
+            cell.set_height(1 / no_of_rows)
+
+        # This function borrowed from stack overflow
+        # https://stackoverflow.com/questions/48210749/matplotlib-table-assign-different-text-alignments-to-different-columns
+        def set_align_for_column(table, col, align="left"):
+            cells = [key for key in table._cells if key[1] == col]
+            for cell in cells:
+                table._cells[cell]._loc = align
+
+        # Now, align the columns as desired.
+        set_align_for_column(tbl, col=0, align="left")
+
+        # Autoset column width (Beware if the no of cols changes, this may mean the plot
+        # exceeds it's subplot space...)
+        tbl.auto_set_column_width([1, 2, 3, 4])
+        # Both lines required for font size to be changed (who knows why...)
+        tbl.auto_set_font_size(False)
+        tbl.set_fontsize(10)
+
+        self.write_plot(plt)
+
+    def image_stack_figure(
+        self,
+        dimensions=None,
+        z_list=None,
+        elevation=30,
+        rotation=45,
+        down_saing=6,
+        vertical_stack=True,
+    ):
         """
         This stacks images in a 3D space vertically or horizontally
 
@@ -139,11 +239,17 @@ class Graphy(StyleSheet):
 
         # If dimensions have not been set, set dimension to be the largest of X and Y
         if not dimensions:
-            dimensions = max(max([img.shape[0] for img in raw_images]), max([img.shape[1] for img in raw_images]))
+            dimensions = max(
+                max([img.shape[0] for img in raw_images]),
+                max([img.shape[1] for img in raw_images]),
+            )
 
         # If not a custom z, set z to be a flat list based on index
         if not z_list:
-            z_list = [np.full((dimensions, dimensions), index) for index, img in enumerate(raw_images)]
+            z_list = [
+                np.full((dimensions, dimensions), index)
+                for index, img in enumerate(raw_images)
+            ]
 
         # Read in the images and Scale images them to a square
         images = [cv2.resize(img, (dimensions, dimensions)) for img in raw_images]
@@ -151,13 +257,29 @@ class Graphy(StyleSheet):
         # Plot the images, depending on the sub image resolution scaling from r/cstride this can take a while so print
         # progress
         x, y = np.mgrid[0:dimensions, 0:dimensions]
-        ax = plt.gca(projection='3d')
+        ax = plt.gca(projection="3d")
         for index, (img, z) in enumerate(zip(images, z_list)):
             # y and z are inverted if horizontal stacking
             if vertical_stack:
-                ax.plot_surface(x, y, z, rstride=down_sampling, cstride=down_sampling, facecolors=img, shade=False)
+                ax.plot_surface(
+                    x,
+                    y,
+                    z,
+                    rstride=down_saing,
+                    cstride=down_saing,
+                    facecolors=img,
+                    shade=False,
+                )
             else:
-                ax.plot_surface(x, z, y, rstride=down_sampling, cstride=down_sampling, facecolors=img, shade=False)
+                ax.plot_surface(
+                    x,
+                    z,
+                    y,
+                    rstride=down_saing,
+                    cstride=down_saing,
+                    facecolors=img,
+                    shade=False,
+                )
             print(f"plotted {index}")
 
         # Set camera in 3D space
@@ -168,7 +290,9 @@ class Graphy(StyleSheet):
 
     def pie_chart(self, start_angle=90, display_values=None):
         # Easier to use a csv object rather than pandas for this so recast the data to CsvObject
-        labels, amount, explode = CsvObject(self._read_directory, column_types=[str, int, float]).column_data
+        labels, amount, explode = CsvObject(
+            self._read_directory, column_types=[str, int, float]
+        ).column_data
 
         # Construct the pie chart from the raw data
         ax = self.seaborn_figure()
@@ -178,7 +302,7 @@ class Graphy(StyleSheet):
             labels=labels,
             startangle=start_angle,
             colors=self.palette(),
-            autopct=display_values
+            autopct=display_values,
         )
         ax.axis("equal")
         self.write_plot(ax)
@@ -286,12 +410,7 @@ class Graphy(StyleSheet):
 
         return plot
 
-    def bar_plot(
-            self,
-            x_var,
-            y_var,
-            gradient_variable
-    ):
+    def bar_plot(self, x_var, y_var, gradient_variable):
         """Create a bar plot in seaborn using the style sheet and chosen variable values.
 
         :param x_var: The variable you want on the x axis
@@ -313,24 +432,14 @@ class Graphy(StyleSheet):
 
         # Generate the plot
         # NB Some arguments are left at default that are given sensible defaults by seaborn
-        plot = sns.barplot(
-            x=x_var,
-            y=y_var,
-            data=self._data,
-            hue=gradient_variable
-        )
+        plot = sns.barplot(x=x_var, y=y_var, data=self._data, hue=gradient_variable)
 
         # Write out the plot to chosen write directory as a png
         self.write_plot(plot)
 
         return plot
 
-    def violin_plot(
-            self,
-            x_var,
-            y_var,
-            gradient_variable
-    ):
+    def violin_plot(self, x_var, y_var, gradient_variable):
         """Create a bar plot in seaborn using the style sheet and chosen variable values.
 
         :param x_var: The variable you want on the x axis
@@ -350,21 +459,14 @@ class Graphy(StyleSheet):
 
         # Generate the plot
         # NB Some arguments are left at default that are given sensible defaults by seaborn
-        plot = sns.violinplot(
-            x=x_var,
-            y=y_var,
-            data=self._data,
-            hue=gradient_variable
-        )
+        plot = sns.violinplot(x=x_var, y=y_var, data=self._data, hue=gradient_variable)
 
         # Write out the plot to chosen write directory as a png
         self.write_plot(plot)
 
         return plot
 
-    def kde_plot(
-            self
-    ):
+    def kde_plot(self):
         """Create a kde plot in seaborn using the style sheet and chosen variable values.
 
         :param x_var: The variable you want on the x axis
@@ -382,9 +484,7 @@ class Graphy(StyleSheet):
 
         # Generate the plot
         # NB Some arguments are left at default that are given sensible defaults by seaborn
-        plot = sns.kdeplot(
-            data=self._data
-        )
+        plot = sns.kdeplot(data=self._data)
 
         # Write out the plot to chosen write directory as a png
         self.write_plot(plot)
@@ -489,9 +589,13 @@ class Graphy(StyleSheet):
             if len(file_type) == 1:
                 files = [f.split(".")[-1] for f in os.listdir(data)]
                 if "png" in files:
-                    return [os.path.realpath(f"{data}/{file}") for file in os.listdir(data)]
+                    return [
+                        os.path.realpath(f"{data}/{file}") for file in os.listdir(data)
+                    ]
                 else:
-                    raise TypeError("Only .png files are currently expected for directory iteration")
+                    raise TypeError(
+                        "Only .png files are currently expected for directory iteration"
+                    )
 
             else:
                 file_type = file_type[-1]
@@ -504,8 +608,10 @@ class Graphy(StyleSheet):
                 elif file_type == "sav":
                     data = pd.read_spss(data)
                 else:
-                    sys.exit("Error: File type not supported\nCurrent supported files are pandas.Dataframe, csv, xlsx,"
-                             " dta and sav")
+                    sys.exit(
+                        "Error: File type not supported\nCurrent supported files are pandas.Dataframe, csv, xlsx,"
+                        " dta and sav"
+                    )
         return data
 
     @staticmethod
@@ -522,7 +628,6 @@ class Graphy(StyleSheet):
             return os.path.join(os.getcwd(), "plots")
         else:
             return os.path.realpath(write_directory)
-
 
     def _set_figure_name(self, figure_name):
         """Given original filename, appends an integer to make it unique.
@@ -575,6 +680,8 @@ class Graphy(StyleSheet):
             Path(self._write_directory).mkdir(parents=True, exist_ok=True)
             # Try saving the plot out again
             plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
+        except AttributeError:
+            plot.savefig(self._file_path, dpi=300, bbox="tight")
         except OSError as ex:
             # If any other errors are raised, print them to the console
             print(ex)
