@@ -3,11 +3,12 @@ from graphy2 import pd
 
 
 class Data:
-    def __init__(self, data):
+    def __init__(self, data, rounding=3):
         self._data = data
+        self._round = rounding
 
     # todo rounding needs to be exposed as a style set
-    def odds_ratio(self, case_control_totals=True, sub_grouping=None, rounding=3):
+    def odds_ratio(self, case_control_totals=True, sub_grouping=None):
         """
         calculates the Odds ratio with a confidence internal
 
@@ -55,27 +56,14 @@ class Data:
         # todo, take a list that is the sub-group (use the sub group with the 2nd type of binary data)
         # todo append rows for groups and for totals
 
-        case_i, control_i, case_total, control_total = self._non_event_totals(case_control_totals)
-        df = self._data.copy()
+        # Creates Order of "Trail", "Event Cases", "Non-event Case", "Total Cases", "Event Control", "Non-event Control"
+        # "Total Controls", "Study Total"
+        self._non_event_totals(case_control_totals)
+        odds = pd.DataFrame(self._compute_odds())
+        confidence_interval = pd.DataFrame(self._odds_confidence_interval())
+        self._relative_weights()
 
-        self._data["effect"] = (self._data.iloc[:, 1] * self._data.iloc[:, control_i]) / \
-                             (self._data.iloc[:, 3] * self._data.iloc[:, case_i])
 
-        self._data["log_odds_SE"] = np.sqrt((1 / self._data.iloc[:, 1]) + (1 / self._data.iloc[:, case_i]) +
-                                            (1 / self._data.iloc[:, 3]) + (1 / self._data.iloc[:, control_i]))
-
-        self._data["upper_bound"] = np.exp(np.log(self._data["effect"]) + (1.96 * self._data["log_odds_SE"]))
-        self._data["lower_bound"] = np.exp(np.log(self._data["effect"]) - (1.96 * self._data["log_odds_SE"]))
-        self._data["Odds Ratio(95% CI)"] = [f"{round(odds, rounding)}[{round(low, rounding)}-{round(high, rounding)}]"
-                                            for odds, low, high in zip(self._data["effect"], self._data["lower_bound"],
-                                                                       self._data["upper_bound"])]
-
-        self._data["N"] = self._data.iloc[:, case_total] + self._data.iloc[:, control_total]
-        self._data["2n_square"] = 2 * (self._data["N"] * self._data["N"])
-        self._data["weight_n"] = self._data["2n_square"] * (self._data["N"] * 2)
-        self._data["weight_d"] = self._data["N"] * self._data["N"] * np.square(self._data["effect"])
-        self._data["total_weight"] = self._data["weight_n"] / self._data["weight_d"]
-        self._data["Relative Weight"] = self._data["total_weight"] / self._data["total_weight"].sum()
 
         return pd.concat([df, self._data["N"], self._data["Odds Ratio(95% CI)"], self._data["Relative Weight"]], axis=1,
                          join="outer")
@@ -85,22 +73,46 @@ class Data:
             # Then calculate the non_event case/control and set index to these new columns
             self._data["non_event_case"] = self._data.iloc[:, 2] - self._data.iloc[:, 1]
             self._data["non_event_control"] = self._data.iloc[:, 4] - self._data.iloc[:, 3]
-            case_total = 2
-            case_i = 5
-            control_total = 4
-            control_i = 6
+            self._data["Study_total"] = self._data.iloc[:, 2] + self._data.iloc[:, 4]
+            self._data.columns = ["Trail", "Event Cases", "Total Cases", "Event Control", "Total Controls",
+                                  "Non-event Case", "Non-event Control", "Study Total"]
 
         else:
             # Calculate the totals for cases and controls and set indexes accordingly
             self._data["case_total"] = self._data.iloc[:, 1] + self._data.iloc[:, 2]
             self._data["control_totals"] = self._data.iloc[:, 3] + self._data.iloc[:, 4]
-            case_i = 2
-            case_total = 5
-            control_i = 4
-            control_total = 6
+            self._data["Study_total"] = self._data.iloc[:, 5] + self._data.iloc[:, 6]
+            self._data.columns = ["Trail", "Event Cases", "Non-event Case", "Event Control", "Non-event Control",
+                                  "Total Cases", "Total Controls", "Study Total"]
 
-        return case_i, control_i, case_total, control_total
+        self._data = self._data[["Trail", "Event Cases", "Non-event Case", "Total Cases", "Event Control",
+                                 "Non-event Control", "Total Controls", "Study Total"]]
+
+    def _compute_odds(self):
+        return round((self._data["Event Cases"] * self._data["Non-event Control"]) /
+                     (self._data["Event Control"] * self._data["Non-event Case"]), self._round)
+
+    def _log_odds_standard_error(self):
+        return round(np.sqrt((1 / self._data.iloc[:, 1]) + (1 / self._data.iloc[:, 2]) +
+                             (1 / self._data.iloc[:, 4]) + (1 / self._data.iloc[:, 5])), self._round)
+
+    def _odds_confidence_interval(self):
+        odds = self._compute_odds()
+        se = self._log_odds_standard_error()
+        upper = np.exp(np.log(odds) + (1.96 * se))
+        lower = np.exp(np.log(odds) - (1.96 * se))
+
+        return [f"{odd}[{round(low, self._round)}-{round(high, self._round)}]" for odd, low, high in
+                zip(odds, upper, lower)]
+
+    def _relative_weights(self):
+        weight = (2 * (self._data["Study Total"] * self._data["Study Total"])) * (self._data["Study Total"] * 2) / \
+                 (self._data["Study Total"] * self._data["Study Total"] * np.square(self._compute_odds()))
+
+        return round(weight / weight.sum(), self._round)
 
     def relative_risk(self):
         pass
+
+
 

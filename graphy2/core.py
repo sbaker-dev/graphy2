@@ -80,8 +80,11 @@ class Graphy(StyleSheet):
 
         # Set up defaults and data first
         df = Data(self._data).odds_ratio()
+
+        # should have been handeled in odds
         # Round the relative weight to 3 significant figures
-        df["Relative Weight"] = df["Relative Weight"].astype("float64").round(3)
+        # df["Relative Weight"] = df["Relative Weight"].astype("float64").round(3)
+
         # Change variables to strings for easy concatenation
         df = df.astype(str)
         # Create summary columns of events/total
