@@ -1,5 +1,7 @@
 from graphy2.StyleSheet import StyleSheet
 import os
+import pandas as pd
+import sys
 
 
 class Common(StyleSheet):
@@ -16,7 +18,6 @@ class Common(StyleSheet):
         :return: Nothing, setattr all values for matching keys then end
         :rtype: None
         """
-
         # TODO This is not efficient and needs upgrading
 
         key_list, value_list = self.style_sheet
@@ -24,6 +25,29 @@ class Common(StyleSheet):
             for new_key in new_style:
                 if new_key == key:
                     setattr(self, str(key), new_style[new_key])
+
+    @staticmethod
+    def _set_data_frame(data):
+        """
+        If the loaded data is not an instance of pandas dataframe, create one from the file type using pandas
+        """
+        if not isinstance(data, pd.Dataframe):
+            file_type = data.split(".")[-1]
+
+            if file_type == "csv":
+                data = pd.read_csv(data)
+            elif file_type == "xlsx":
+                data = pd.read_excel(data)
+            elif file_type == "dta":
+                data = pd.read_stata(data)
+            elif file_type == "sav":
+                data = pd.read_spss(data)
+            else:
+                sys.exit(
+                    "Error: File type not supported\nCurrent supported files are pandas.Dataframe, csv, xlsx,"
+                    " dta and sav"
+                )
+        return data
 
     @staticmethod
     def _set_write_path(write_directory, file_name):
