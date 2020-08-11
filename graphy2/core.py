@@ -8,10 +8,10 @@ from matplotlib.image import imread as mat_imread
 import numpy as np
 from csvObject import CsvObject
 import matplotlib.pyplot as plt
+import warnings
 
 # required even if not used for 3D functionality in matplotlib
 from mpl_toolkits.mplot3d import Axes3D
-
 
 class Graphy(StyleSheet):
     def __init__(
@@ -27,64 +27,6 @@ class Graphy(StyleSheet):
         self._write_directory = self._set_write_directory(write_directory)
         self._figure_name = self._set_figure_name(figure_name)
         self._file_path = self._set_file_path()
-
-    def scatter_plot(
-        self,
-        x_variable,
-        y_variable,
-        gradient_variable=None,
-        size_variable=None,
-        custom_ranking=None,
-    ):
-        """
-        This creates a scatter plot from and x and y variable with the option to have gradient and size variation for
-        each points. If you want to have a ranking different from base, please specify an ordered list to custom
-        ranking
-
-        :param x_variable: The variable you want on the x axis
-        :type x_variable: str
-
-        :param y_variable: The variable you want on the y axis
-        :type y_variable: str
-
-        :param gradient_variable: A variable to apply a gradient of colour to the points
-        :type gradient_variable: str
-
-        :param size_variable: A variable to vary the size of the points
-        :type size_variable: str
-
-        :param custom_ranking: A list of rankings to use instead of the default set
-        :type custom_ranking: list
-
-        :return: The seaborn plot is returned if users wish to do something with it, the figure is also saved to the
-            write directory
-
-        :rtype: matplotlib.axes._subplots.AxesSubplot
-        """
-
-        self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
-
-        plot = sns.scatterplot(
-            x=x_variable,
-            y=y_variable,
-            data=self._data,
-            palette=self.palette(),
-            ax=self.seaborn_figure(),
-            hue=gradient_variable,
-            size=size_variable,
-            hue_order=custom_ranking,
-            linewidth=self.outline_width,
-            sizes=(self.min_point_size, self.max_point_size),
-        )
-
-        # Write out the plot to chosen write directory as a png
-        self.write_plot(plot)
-
-        return plot
-
-    def prisma_plot(self):
-        pass
-
 
     def forest_plot(self, weight_area=50):
         """
@@ -323,6 +265,9 @@ class Graphy(StyleSheet):
         return ax
 
     def pie_chart(self, start_angle=90, display_values=None):
+
+        warnings.warn("Deprecated: Will be moved into Seaborn.py soon.tm", DeprecationWarning)
+
         # Easier to use a csv object rather than pandas for this so recast the data to CsvObject
         labels, amount, explode = CsvObject(
             self._read_directory, column_types=[str, int, float]
@@ -365,6 +310,8 @@ class Graphy(StyleSheet):
         :return: The seaborn plot is returned, and .png image saved to the write directory
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
+        warnings.warn("Deprecated: Will be moved into Seaborn.py soon.tm", DeprecationWarning)
+
 
         # Validate the arguments provided
         self._validate_variable_args(
@@ -417,6 +364,7 @@ class Graphy(StyleSheet):
         :return: The seaborn plot is returned, and .png image saved to the write directory
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
+        warnings.warn("Deprecated: Will be moved into Seaborn.py soon.tm", DeprecationWarning)
 
         # Validate the arguments provided
         self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
@@ -456,6 +404,7 @@ class Graphy(StyleSheet):
         :param size_variable: A variable that will be used to decide the line width
         :type size_variable: str
         """
+        warnings.warn("Deprecated: Will be moved into Seaborn.py soon.tm", DeprecationWarning)
 
         # Validate the arguments provided
         self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
@@ -483,6 +432,7 @@ class Graphy(StyleSheet):
         :param gradient_variable: A variable to apply a gradient of colour to the points
         :type gradient_variable: str
         """
+        warnings.warn("Deprecated: Will be moved into Seaborn.py soon.tm", DeprecationWarning)
 
         # Validate the arguments provided
         self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
@@ -508,6 +458,7 @@ class Graphy(StyleSheet):
         :param y_var: The variable you want on the y axis
         :type y_var: str
         """
+        warnings.warn("Deprecated: Will be moved into Seaborn.py soon.tm", DeprecationWarning)
 
         # Validate the arguments provided
         self._validate_variable_args(locals(), locals().values(), ["custom_ranking"])
@@ -543,6 +494,9 @@ class Graphy(StyleSheet):
         :return: The seaborn plot is returned, and .png image saved to the write directory
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
+
+        warnings.warn("Deprecated: Will be moved into Seaborn.py soon.tm", DeprecationWarning)
+
         # Validate the arguments provided
         self._validate_variable_args(
             locals(), locals().values(), ["ignore_na", "colour", "legend_label"]
@@ -623,13 +577,9 @@ class Graphy(StyleSheet):
             if len(file_type) == 1:
                 files = [f.split(".")[-1] for f in os.listdir(data)]
                 if "png" in files:
-                    return [
-                        os.path.realpath(f"{data}/{file}") for file in os.listdir(data)
-                    ]
+                    return [os.path.realpath(f"{data}/{file}") for file in os.listdir(data)]
                 else:
-                    raise TypeError(
-                        "Only .png files are currently expected for directory iteration"
-                    )
+                    raise TypeError("Only .png files are currently expected for directory iteration")
 
             else:
                 file_type = file_type[-1]
@@ -709,13 +659,16 @@ class Graphy(StyleSheet):
 
         try:
             plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
+
         except FileNotFoundError:
             # If the subdirectory does not exist, try to make it
             Path(self._write_directory).mkdir(parents=True, exist_ok=True)
             # Try saving the plot out again
             plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
+
         except AttributeError:
             plot.savefig(self._file_path, dpi=300, bbox="tight")
+
         except OSError as ex:
             # If any other errors are raised, print them to the console
             print(ex)
