@@ -3,7 +3,7 @@ This is a basic example of how to use the library natively in python.
 """
 from graphy2.core import Graphy
 import seaborn as sns
-from graphy2.style_sheets import COOL_ON_WHITE
+from graphy2.StyleSheet import COOL_ON_WHITE
 
 if __name__ == "__main__":
     # Load data set

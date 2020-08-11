@@ -1,5 +1,5 @@
 from graphy2 import pd, sns, sys
-from graphy2.styles import StyleSheet
+from graphy2.StyleSheet import StyleSheet
 from pathlib import Path
 from graphy2.data import Data
 import os
@@ -40,18 +40,25 @@ class Graphy(StyleSheet):
         This creates a scatter plot from and x and y variable with the option to have gradient and size variation for
         each points. If you want to have a ranking different from base, please specify an ordered list to custom
         ranking
+
         :param x_variable: The variable you want on the x axis
         :type x_variable: str
+
         :param y_variable: The variable you want on the y axis
         :type y_variable: str
+
         :param gradient_variable: A variable to apply a gradient of colour to the points
         :type gradient_variable: str
+
         :param size_variable: A variable to vary the size of the points
         :type size_variable: str
+
         :param custom_ranking: A list of rankings to use instead of the default set
         :type custom_ranking: list
+
         :return: The seaborn plot is returned if users wish to do something with it, the figure is also saved to the
             write directory
+
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
 
@@ -74,6 +81,10 @@ class Graphy(StyleSheet):
         self.write_plot(plot)
 
         return plot
+
+    def prisma_plot(self):
+        pass
+
 
     def forest_plot(self, weight_area=50):
         """

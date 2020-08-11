@@ -17,7 +17,6 @@ class Data:
 
         Data(self._data).non_event_totals()
 
-
         plotting = [pd.DataFrame(self.confidence_interval(upper=False)), pd.DataFrame(self.confidence_interval()),
                     self._compute_odds(), self._relative_weights()]
 
@@ -29,7 +28,6 @@ class Data:
         plot_data = pd.concat(plotting, axis=1)
         plot_data.columns = ["Lower", "Upper", "Odds", "Relative Weight"]
         return table_data, plot_data
-
 
     def non_event_totals(self):
         if self.case_control_totals:
@@ -76,12 +74,7 @@ class Data:
         return round(weight / weight.sum(), self._round)
 
     def format_events(self, case_control="Cases"):
-
-
         return [f"{c}/{t}" for c, t in zip(self._data[f"Event {case_control}"], self._data[f"Total {case_control}"])]
-
-
-
 
         # return self._data[f"Event {case_control}"].str.cat(self._data[f"Total {case_control}"], sep="/")
 
