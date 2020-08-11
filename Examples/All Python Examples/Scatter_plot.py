@@ -2,6 +2,7 @@
 This is a basic example of how to use the library natively in python.
 """
 from graphy2.core import Graphy
+from graphy2.APIs.Seaborn import SeabornAPI
 import seaborn as sns
 from graphy2.StyleSheet import COOL_ON_WHITE
 
@@ -16,4 +17,5 @@ if __name__ == "__main__":
     COOL_ON_WHITE["figure_x"] = 8
 
     # # Call graphy2 to produce the scatter plot
-    Graphy(diamonds, "Scatter Plot", COOL_ON_WHITE).scatter_plot("carat", "price", "clarity", "depth", clarity_ranking)
+    SeabornAPI(diamonds, "Scatter Plot", COOL_ON_WHITE).scatter_plot("carat", "price", "clarity", "depth",
+                                                                     clarity_ranking)
