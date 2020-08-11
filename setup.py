@@ -21,7 +21,7 @@ MAINTAINER = 'Samuel Baker, Nina Di Cara, Oliwia Michalak'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/graphy2"
-VERSION = "0.04.1"
+VERSION = "0.04.2"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
