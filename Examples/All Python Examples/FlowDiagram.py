@@ -1,5 +1,5 @@
 from graphy2.StyleSheet import default_style_sheet
-from graphy2.Custom_Graphs.Flow import Flow
+from graphy2.Flow import Flow
 
 if __name__ == '__main__':
     # Change default style so that the diagram will fit, do some trail an error

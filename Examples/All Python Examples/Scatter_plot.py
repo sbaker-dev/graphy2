@@ -1,8 +1,7 @@
 """
 This is a basic example of how to use the library natively in python.
 """
-from graphy2.core import Graphy
-from graphy2.APIs.Seaborn import SeabornAPI
+from graphy2.Seaborn import SeabornAPI
 import seaborn as sns
 from graphy2.StyleSheet import COOL_ON_WHITE
 
