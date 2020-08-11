@@ -1,10 +1,14 @@
-from graphy2.StyleSheet import StyleSheet, default_style_sheet
+from graphy2.StyleSheet import StyleSheet
 from graphy2 import plt
 from graphy2.Common import Common
 import textwrap
 
 
 class Flow(Common, StyleSheet):
+    """
+    This will create a two column flow chart, similar in principle to PRISMA, but to show why you have removed
+    observations from a study for example.
+    """
     def __init__(self, write_directory, figure_name, line_max, style_sheet=None):
         super().__init__(write_directory=write_directory, file_name=figure_name)
         self._prisma_dict = {}
