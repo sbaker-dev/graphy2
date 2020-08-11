@@ -31,7 +31,7 @@ class Common(StyleSheet):
         """
         If the loaded data is not an instance of pandas dataframe, create one from the file type using pandas
         """
-        if not isinstance(data, pd.Dataframe):
+        if not isinstance(data, pd.DataFrame):
             file_type = data.split(".")[-1]
 
             if file_type == "csv":

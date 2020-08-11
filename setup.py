@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # Copyright (C) 2020 Samuel Baker, Nina Di Cara, Oliwia Michalak
 
-DESCRIPTION = "graphy2: cross platform compatible graphs and tables"
+DESCRIPTION = "graphy2: cross platform compatible Custom_Graphs and tables"
 LONG_DESCRIPTION = """
 graphy2 is designed to try and insure that a given table or graph standard can be constructed 
 from any given statistical or python platform. It is built on top of many external libraries listed below and acts as 
@@ -11,10 +11,9 @@ Seaborn:       <https://github.com/mwaskom/seaborn>
 Pandas:        <https://github.com/pandas-dev/pandas>  
 matplotlib:    <https://github.com/pandas-dev/pandas>  
  
-graphy2 can be called within python but graphy2 also comes with a wrapper for Rgraphy2, Stata and SPSS so that individuals can 
-still use the program from the software/code type they prefer. It is designed to be as simple as possible, with most
-commands being pushed to a single line. graphy2 also contains a list of styles for well used graphs/tables that should
-reflect the standards expected from certain journals.
+It is designed to be as simple as possible, with most commands being pushed to a single line. graphy2 also contains a
+list of styles for well used Custom_Graphs/tables that should reflect the standards expected from certain journals at 
+some point in the future (hopefully).
 """
 
 DISTNAME = 'graphy2'
@@ -22,7 +21,7 @@ MAINTAINER = 'Samuel Baker, Nina Di Cara, Oliwia Michalak'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/graphy2"
-VERSION = "0.03.0"
+VERSION = "0.04.0"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
