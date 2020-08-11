@@ -10,6 +10,6 @@ import sys
 from graphy2.core import *
 from graphy2.StyleSheet import *
 from graphy2.data import *
-from graphy2.APIs import *
-from graphy2.Custom_Graphs import *
+from graphy2.Seaborn import *
+from graphy2.Flow import *
 from graphy2.Common import *
