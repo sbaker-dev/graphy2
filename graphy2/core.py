@@ -27,6 +27,7 @@ class Graphy(StyleSheet):
         self._write_directory = self._set_write_directory(write_directory)
         self._figure_name = self._set_figure_name(figure_name)
         self._file_path = self._set_file_path()
+        self._store_data = self._set_data_frame(data)
 
     def forest_plot(self, weight_area=50):
         """
@@ -42,44 +43,47 @@ class Graphy(StyleSheet):
         """
 
         # Construct the table's data
-        data, plot_data = Data(self._data).construct_odds_table()
+        # data, plot_data = Data(self._data).construct_odds_table()
 
         # Get height to set each row based on number of data entries
-        no_of_rows = data.shape[0] + 1
-        no_of_cols = data.shape[1]
+        # no_of_rows = data.shape[0] + 1
+        # no_of_cols = data.shape[1]
+        # print(self._store_data)
 
         # Write the forest subplot
-        self._forest_plot_plot(no_of_cols, no_of_rows, plot_data, data, weight_area)
+        self._forest_plot_plot(60)
 
-        # Construct the table subplot
-        self._forest_plot_table(no_of_rows, data)
+        # # Construct the table subplot
+        # self._forest_plot_table(no_of_rows, data)
+        #
+        # # Todo this should be probably have a specific handle rather than being part of attribute error
+        # self.write_plot(plt)
 
-        # Todo this should be probably have a specific handle rather than being part of attribute error
-        self.write_plot(plt)
-
-    def _forest_plot_plot(self, no_of_cols, no_of_rows, plot_data, data, weight_area):
+    def _forest_plot_plot(self, weight_area):
         # Instatiate the figure (we will recreate the axes, so don't need them)
-        fig, _ = StyleSheet().seaborn_figure(return_figure=True)
+        fig, ax2 = StyleSheet(dpi=300).seaborn_figure(return_figure=True)
 
         # TODO: +5 and -5 work with this number of rows/cols but this should be tested
         # with other data sets to see if it needs to be proportionate to number of rows/cols
         # Set the figure size so it's proportionate to the amount of data in the figure
         # todo Agreed, this needs to be generalised but cannot think of how to do that right now.
-        fig.set_size_inches(no_of_cols * 2, no_of_cols)
+        fig.set_size_inches(5, 5)
 
         # Make sure the two subplots use available space using tight_layout()
         plt.tight_layout()
-        # Remove distance between the table and the graph
-        plt.subplots_adjust(wspace=0.1, hspace=0)
+        # # Remove distance between the table and the graph
+        # plt.subplots_adjust(wspace=0.1, hspace=0)
 
-        # Create the subplots to our data requirements (makes sure that the rows of the
-        # table will line up with the graph we draw).
-        ax2 = plt.subplot2grid(
-            (no_of_rows, 2), (1, 1), rowspan=no_of_rows - 1, colspan=1
-        )
+        # # Create the subplots to our data requirements (makes sure that the rows of the
+        # # table will line up with the graph we draw).
+        # ax2 = plt.subplot2grid(
+        #     (no_of_rows, 2), (1, 1), rowspan=no_of_rows - 1, colspan=1
+        # )
 
         # Plotting the forest plot
-        ax2.set(xlim=(min(plot_data.iloc[:, 0]), max(plot_data.iloc[:, 1])), ylim=(0, len(data.index)))
+        # print(self._store_data)
+        # print(self._store_data.iloc[:,3])
+        ax2.set(xlim=(min(self._store_data.iloc[:,3]), max(self._store_data.iloc[:, 4])), ylim=(0, 10))
         # Make sure the plots are ordered correctly against the table
         plt.gca().invert_yaxis()
 
@@ -93,15 +97,21 @@ class Graphy(StyleSheet):
         sns.despine(left=True)
 
         # Ensure that there are as many colours as there are values
-        self.number_of_colours = len(data.values)
+        self.number_of_colours = 10
 
         # Drawing the actual lines and squares on the plot
-        for index, ((lower, upper, effect, weight), colour) in enumerate(zip(plot_data.values, self.palette())):
+        # print(self._store_data.values)
+        # print(self.palette())
+        for index, ((exposure, eff_size, se, lower, upper), colour) in enumerate(zip(self._store_data.values, self.palette())):
+            # print(eff_size)
             ax2.plot([lower, upper], [index + 0.5, index + 0.5], color=colour)
-            ax2.plot([effect], [index + 0.5], marker="s", markersize=weight * weight_area, color=colour)
+            ax2.plot([eff_size], [index + 0.5], marker="s", markersize=0.1 * weight_area, color=colour)
 
         # Draw the dotted line
-        ax2.plot([1, 1], [0, len(self._data.index)], "--", color="Black")
+        ax2.plot([0, 0], [0, 10], "--", color="White")
+
+        self.write_plot(plt)
+
 
     def _forest_plot_table(self, no_of_rows, data):
         """
@@ -657,7 +667,15 @@ class Graphy(StyleSheet):
         :rtype: None
         """
 
+        plot.rcParams.update({
+            "figure.facecolor": (0.0, 0.0, 0.0, 1.0),
+            "axes.facecolor": (1.0, 1.0, 1.0, 0.0),
+            "savefig.transparent": True,
+        })
+
         try:
+            # print("HERE?")
+            # print(plot.rcParams)
             plot.get_figure().savefig(self._file_path, bbox_inches="tight", dpi=300)
 
         except FileNotFoundError:

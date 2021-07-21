@@ -21,7 +21,7 @@ MAINTAINER = 'Samuel Baker, Nina Di Cara, Oliwia Michalak'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/graphy2"
-VERSION = "0.04.2"
+VERSION = "0.04.3"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
@@ -35,7 +35,8 @@ INSTALL_REQUIRES = [
     "pytz>=2020.1",
     'numpy>=1.18.4',
     'opencv-python>=4.2.0.34',
-    'csvObject>=0.1'
+    'csvObject>=0.1',
+    'imageObjects>=0.6'
 ]
 
 

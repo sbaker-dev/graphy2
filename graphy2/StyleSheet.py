@@ -132,6 +132,11 @@ class StyleSheet:
         figure, axis = plt.subplots(figsize=(self.figure_x, self.figure_y))
         sns.despine(figure, left=self.d_spline_left, bottom=self.d_spline_bottom, right=self.d_spline_right,
                     top=self.d_spline_top)
+
+        axis.spines["bottom"].set_color("White")
+        axis.xaxis.label.set_color("White")
+        axis.tick_params(axis='x', colors='White')
+
         if return_figure:
             return figure, axis
         else:
@@ -141,4 +146,4 @@ class StyleSheet:
         """
         Returns the palette to be used
         """
-        return sns.color_palette(self.colour_palette, self.number_of_colours)
+        return sns.color_palette("Oranges", self.number_of_colours)

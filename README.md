@@ -1,4 +1,11 @@
-# graphy2
+### Legacy
+
+This package has been set to legacy due to it being easier to remake the figures to be fully customisable via 
+subprocess of Blender than dealing with multiple different sub packages. Blender and python are cross-platform, allowing
+for this to be easiest and most modular way of creating different types of the same figures. You can find the working
+package for this at [pyBlendFigure](https://github.com/sbaker-dev/pyBlendFigures)
+
+###### graphy2
 graphy2: cross platform compatible graphs and tables
 
 graphy2 is designed to try and insure that a given table or graph standard can be constructed 

@@ -38,7 +38,7 @@ class Flow(Common, StyleSheet):
         """
         return f"{textwrap.fill(value['Title'], self.line_max)}\n\nN={value['N']}"
 
-    def construct_flow_plot(self, padding=0.1, column_mod=1.0):
+    def construct_flow_plot(self, padding=20, column_mod=1.0):
         """
         Construct a flow plot from the dict values, with padding in x and y from padding and column mod
         """
@@ -57,25 +57,30 @@ class Flow(Common, StyleSheet):
         for key, value in zip(self._prisma_dict.keys(), list(self._prisma_dict.values())[::-1]):
 
             if value["Add"]:
+                print(self._set_y(y, key))
                 # Plot the left hand column text
-                t = plt.text(int(x / 3), self._set_y(y, key), self._format_text(value),
+                t = plt.text(int(x * (1 / 3)) - padding, self._set_y(y, key), self._format_text(value),
                              ha="center", va="top", fontsize=20, wrap=True,
                              bbox=dict(boxstyle="round", facecolor="white", ec="black"))
 
+                print(t.get_window_extent)
+
                 # Draw a line between this box and the next
-                plt.plot([int(x / 3), int(x / 3)],
+                plt.plot([int(x * (1 / 3)) - padding, int(x * (1 / 3)) - padding],
                          [self._set_y(y, key), self._set_y(y, key, 1) + t.get_window_extent(renderer=r).height],
                          color="black")
 
             else:
                 # Otherwise draw the boxes on the other side of page, modified with padding for x and column_mod for y
-                t = plt.text(int(x*(1-padding)), ((self._set_y(y, key) + self._set_y(y, key, -1)) / 2) * column_mod,
+                t = plt.text(int(x * (2 / 3)) + padding, ((self._set_y(y, key) + self._set_y(y, key, -1)) / 2) * column_mod,
                              self._format_text(value), ha="center", va="top", fontsize=20, wrap=True,
                              bbox=dict(boxstyle="round", facecolor="white", ec="black"))
 
                 # Horizontal line *currently an arrow*, to the center line
                 height = t.get_window_extent(renderer=r).height
-                plt.arrow(int(x/3), (((self._set_y(y, key) + self._set_y(y, key, -1)) / 2) - (height / 2)) * column_mod,
-                          int(x * (1 - padding)), 0, head_width=5, head_length=5, fc="k", ec="k")
+                plt.arrow(int(x * (1 / 3)) - padding, (((self._set_y(y, key) + self._set_y(y, key, -1)) / 2) - (height / 2)) * column_mod,
+                          int(x * (2 / 3)) + padding, 0, head_width=5, head_length=5, fc="k", ec="k")
+
 
         self.write_plot(plt)
+        plt.show()
